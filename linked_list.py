@@ -1,9 +1,11 @@
 class _Node:
-    def __init__(self, key, data=None, next_node=None, prev_node=None):
+    def __init__(self, key, data=None, next_node=None):
         self.key = key
         self.data = data
         self.next_node = next_node
-        self.prev_node = prev_node
+
+    def set_next(self, new_next):
+        self.next_node = new_next
 
 
 class LinkedList:
@@ -40,22 +42,37 @@ class LinkedList:
             n.next_node= self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
 
-    def list_insert_middle(self, key, prev_node):
+    def index(self, key):
         """
-        Insert an item in the middle of the list
-        :param key: key of item to be inserted
+        Return index of the given key
+        :param key
+        :return:
+        """
+        i = 0
+        node = self._head
+        while node and node.key != key:
+            node = node.next_node
+            i += 1
+        if node:
+            return i
+        else:
+            raise ValueError("{:s} is not in the linked list".format(key))
+
+    def list_insert_middle(self, prev_key, key):
+        """ Insert an item to the linked list
+
+        :param key:  the key to be inserted
+        :param prev_key:  the previous key in the list
         :return:
         """
         new_node = _Node(key)
-        prev_node = self._head  # start at the head of the list
-        if prev_node is not None:  # if there are some items in the list
-            # while you haven't matched the node, and there are more nodes to look at
-            while prev_node.next_node != key and prev_node.next_node is not None:
-                prev_node = prev_node.next_node  # look at the next one
-        new_node.prev = prev_node
-        prev_node.next_node = new_node
+        i = ll.index(prev_key)
+        node = self._head
+        for n in range(i):
+            node = node.next_node
+        new_node.next_node = node.next_node
+        node.next_node = new_node
         self._size +=1
-
 
     def list_search(self, key):
         """
@@ -104,5 +121,5 @@ if __name__ == "__main__":
     print(ll)
     ll.list_insert_tail("charles")
     print(ll)
-    ll.list_insert_middle("dave", fred)
+    ll.list_insert_middle("fred", "dave")
     print(ll)
