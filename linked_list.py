@@ -6,17 +6,38 @@ class _Node:
 
 
 class LinkedList:
-    def __init__(self, head):
-        self.head = head
+    def __init__(self, head=None, tail=None):
+        self._head = head
+        self._tail = tail
+        self._size = 0
 
-    def list_insert(self, item):
+    def list_insert_head(self, key):
         """
-        Insert item at the head of the list.
-        :param item: _Node item to be inserted
+        Insert key at the head of the list.
+        :param key: key of item to be inserted
         :return:
         """
-        item.next_node = self.head  # make item point to the current head of the list
-        self.head = item  # make item be the new head of the list
+        new_node = _Node(key)
+        new_node.next_node = self._head  # make item point to the current head of the list
+
+        self._head = new_node  # make item be the new head of the list
+        if self._size == 0:
+            self._tail = self._head
+        self._size += 1
+
+    def list_insert_tail(self, key):
+        """
+        Insert an item at the tail of the list
+        :param key: key to be inserted
+        :return:
+        """
+        n = self._tail
+        self._tail = _Node(key)
+        if self._size == 0:  # if this is the only item
+            self._head = self._tail  # make it be the first item too
+        else:
+            n.next_node= self._tail  # update the pointer on the thing that used to be at the end
+        self._size += 1
 
     def list_search(self, key):
         """
@@ -24,7 +45,7 @@ class LinkedList:
         :param key: The key you are looking for
         :return: The _Node object with the key you are looking for, or None if it is not in the list
         """
-        x = self.head  # start at the head of the list
+        x = self._head  # start at the head of the list
         while x is not None and x.key != key:  # while there is still a node to look at, and you don't match the key
             x = x.next_node  # look at the next node in the list
         return x  # this executes when you have run out of list, or matched the key
@@ -32,10 +53,10 @@ class LinkedList:
     def list_delete(self, node):
         """
         Delete the specified node from the list, by changing the pointer on the node before to point at the next node.
-        :param node: the node you want to delete
+        :param node: the _Node item you want to delete
         :return:
         """
-        prev = self.head  # start at the head of the list
+        prev = self._head  # start at the head of the list
         if prev is not None:  # if there are some items in the list
             # while you haven't matched the node, and there are more nodes to look at
             while prev.next_node != node and prev.next_node is not None:
@@ -43,9 +64,25 @@ class LinkedList:
             if prev.next_node is not None:  # if the node you are looking at when you broke out of the loop has a next
                 prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
 
+    def __iter__(self):
+        current = self._head
+        while current:
+            yield current.key
+            current = current.next_node
+
+    def __str__(self):
+        return " ".join([str(item) for item in self])
+
 # TODO check these work properly (not tested yet)
 
 
 if __name__ == "__main__":
     # test code goes here!
-    pass
+    ll = LinkedList()
+    ll.list_insert_head("fred")
+    print(ll)
+    ll.list_insert_head("bob")
+    ll.list_insert_head("frank")
+    print(ll)
+    ll.list_insert_tail("charles")
+    print(ll)
