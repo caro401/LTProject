@@ -1,8 +1,9 @@
 class _Node:
-    def __init__(self, key, data=None, next_node=None):
+    def __init__(self, key, data=None, next_node=None, prev_node=None):
         self.key = key
         self.data = data
         self.next_node = next_node
+        self.prev_node = prev_node
 
 
 class LinkedList:
@@ -38,6 +39,23 @@ class LinkedList:
         else:
             n.next_node= self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
+
+    def list_insert_middle(self, key, prev_node):
+        """
+        Insert an item in the middle of the list
+        :param key: key of item to be inserted
+        :return:
+        """
+        new_node = _Node(key)
+        prev_node = self._head  # start at the head of the list
+        if prev_node is not None:  # if there are some items in the list
+            # while you haven't matched the node, and there are more nodes to look at
+            while prev_node.next_node != key and prev_node.next_node is not None:
+                prev_node = prev_node.next_node  # look at the next one
+        new_node.prev = prev_node
+        prev_node.next_node = new_node
+        self._size +=1
+
 
     def list_search(self, key):
         """
@@ -85,4 +103,6 @@ if __name__ == "__main__":
     ll.list_insert_head("frank")
     print(ll)
     ll.list_insert_tail("charles")
+    print(ll)
+    ll.list_insert_middle("dave", fred)
     print(ll)
