@@ -1,4 +1,3 @@
-import nltk
 from nltk import word_tokenize
 import linked_list
 
@@ -40,19 +39,19 @@ class NGramModel:
         x = tokens_ll.head
         while x is not None:
             if x.key == ".":  # when you find a full stop
-                tokens_ll.lst_in_mid(x, "</s>")  # insert end of sentence marker
-                tokens_ll.lst_in_mid(x.next_node, "<s>")  # and after that insert start of sentence marker
+                tokens_ll.list_insert_middle(x, "</s>")  # insert end of sentence marker
+                tokens_ll.list_insert_middle(x.next_node, "<s>")  # and after that insert start of sentence marker
             x = x.next_node  # look at next node
 
         return tokens_ll
 
-    def unigram_count(self):  # TODO test!
+    def unigram_count(self):  # TODO test! compare to NLTK output?
         """
         Work out the counts of all the unigrams in the list of tokens.
         :return: dictionary of all unigrams and associated counts
         """
         unigram_dict = {}
-        x = self.tokens.head  # TODO update linked_list so that head, tail, size are properties
+        x = self.tokens.head
         while x is not None:
             if x.key not in unigram_dict:  # if you haven't encountered this token yet
                 unigram_dict[x.key] = 1  # add a new entry to the dictionary, count 1
@@ -61,31 +60,39 @@ class NGramModel:
             x = x.next_node
         return unigram_dict
 
-    def ngram_count(self, n):  # TODO test
+    def ngram_count(self, n):  # TODO test. Compare with NLTK?
         """
         Work out the counts of all the n-grams in the list of tokens (generalised version of unigram count)
         :param n:
         :return:
         """
         ngram_dict = {}
-        x = self.tokens.head
-        y = x  # pointer to the end of the n-gram
-        for i in range(n):
-            y = y.next_node
-        while y is not None:
-            key = ""
-            for i in range(n):
-                key = x.key + " "
-                x = x.next_node
-            key.strip(" ")
-            if key not in ngram_dict:
-                ngram_dict[key] = 1
+        x = self.tokens.head  # start of n-gram
+        y = x
+        for i in range(n-1):
+            y = y.next_node  # y represents the end of the n-gram
+        while y is not None:  # ie while the n-gram won't go off the end of the list
+
+            # build the key from the values of the nodes between x and y inclusive
+            k = x.key
+            iter_node = x
+            for i in range(n-1):
+                iter_node = iter_node.next_node
+                k = k + " " + iter_node.key
+
+            # update the dictionary based on this key
+            if k not in ngram_dict:
+                ngram_dict[k] = 1
             else:
-                ngram_dict[key] += 1
+                ngram_dict[k] += 1
+
+            # increment the pointers to the start and end of the n-gram
             x = x.next_node
             y = y.next_node
+        return ngram_dict
 
 
 if __name__ == "__main__":
     mod = NGramModel("sml_test.txt", 2)
-    print(mod.tokenise())
+    # print(mod.tokenise())
+    print(mod.ngram_count(3))

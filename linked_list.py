@@ -15,7 +15,7 @@ class LinkedList:
     def head(self):
         return self._head
 
-    def list_insert_head(self, key):
+    def list_insert_head(self, key): # TODO error handling
         """
         Insert key at the head of the list.
         :param key: key of item to be inserted
@@ -29,7 +29,7 @@ class LinkedList:
             self._tail = self._head
         self._size += 1
 
-    def list_insert_tail(self, key):
+    def list_insert_tail(self, key): # TODO error handling
         """
         Insert an item at the tail of the list
         :param key: key to be inserted
@@ -43,8 +43,7 @@ class LinkedList:
             n.next_node= self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
 
-
-    def list_insert_middle(self, prev, key):
+    def list_insert_middle(self, prev, key): # TODO error handling
         """
         Insert a new node, with key *key*, after the node *prev* in the list
         :param prev:  the _Node object to be inserted after
@@ -56,7 +55,7 @@ class LinkedList:
         prev.next_node = new_node  # make the previous node point at the new node
         self._size += 1  # increase size by 1
 
-    def list_search(self, key):
+    def list_search(self, key): # TODO error handling
         """
         Traverse the linked list until you find a node with the specified key
         :param key: The key you are looking for
@@ -67,7 +66,7 @@ class LinkedList:
             x = x.next_node  # look at the next node in the list
         return x  # this executes when you have run out of list, or matched the key
 
-    def list_delete(self, node):
+    def list_delete(self, node): # TODO error handling
         """
         Delete the specified node from the list, by changing the pointer on the node before to point at the next node.
         :param node: the _Node item you want to delete
@@ -93,7 +92,7 @@ class LinkedList:
 
 
 
-# TODO check these work properly (not tested yet)
+# TODO error handling generally
 
 
 if __name__ == "__main__":
