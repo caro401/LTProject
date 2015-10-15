@@ -4,9 +4,6 @@ class _Node:
         self.data = data
         self.next_node = next_node
 
-    def set_next(self, new_next):  # what is this for? it isn't used anywhere
-        self.next_node = new_next
-
 
 class LinkedList:
     def __init__(self, head=None, tail=None):
@@ -46,49 +43,18 @@ class LinkedList:
             n.next_node= self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
 
-    def index(self, key):  # why do we need this?
-        """
-        Return index of the given key
-        :param key
-        :return:
-        """
-        i = 0
-        node = self._head
-        while node and node.key != key:
-            node = node.next_node
-            i += 1
-        if node:
-            return i
-        else:
-            raise ValueError("{:s} is not in the linked list".format(key))
 
-    def list_insert_middle(self, prev_key, key):
-        """ Insert an item to the linked list
-
-        :param key:  the key to be inserted
-        :param prev_key:  the previous key in the list
-        :return:
-        """
-        new_node = _Node(key)
-        i = ll.index(prev_key)  # this gets an error... what is ll meant to be?
-        node = self._head
-        for n in range(i):
-            node = node.next_node
-        new_node.next_node = node.next_node
-        node.next_node = new_node
-        self._size +=1
-
-    def lst_in_mid(self, prev, key):
+    def list_insert_middle(self, prev, key):
         """
         Insert a new node, with key *key*, after the node *prev* in the list
-        :param prev: the _Node object to be inserted after
-        :param key: the key of the new node to be inserted
+        :param prev:  the _Node object to be inserted after
+        :param key:  the key of the new node to be inserted
         :return:
         """
-        new_node = _Node(key)  # make a node from your key
+        new_node = _Node(key)  # make a node from key
         new_node.next_node = prev.next_node  # make that node point at what the previous node is currently pointing at
         prev.next_node = new_node  # make the previous node point at the new node
-        self._size += 1
+        self._size += 1  # increase size by 1
 
     def list_search(self, key):
         """
@@ -140,5 +106,6 @@ if __name__ == "__main__":
     print(ll)
     ll.list_insert_tail("charles")
     print(ll)
-    ll.list_insert_middle("fred", "dave")
+    ll.list_insert_middle(ll.head.next_node, "dave")
+    ll.list_insert_middle(ll.head.next_node, "greg")
     print(ll)
