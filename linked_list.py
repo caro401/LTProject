@@ -4,7 +4,7 @@ class _Node:
         self.data = data
         self.next_node = next_node
 
-    def set_next(self, new_next):
+    def set_next(self, new_next):  # what is this for? it isn't used anywhere
         self.next_node = new_next
 
 
@@ -13,6 +13,10 @@ class LinkedList:
         self._head = head
         self._tail = tail
         self._size = 0
+
+    @property
+    def head(self):
+        return self._head
 
     def list_insert_head(self, key):
         """
@@ -42,7 +46,7 @@ class LinkedList:
             n.next_node= self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
 
-    def index(self, key):
+    def index(self, key):  # why do we need this?
         """
         Return index of the given key
         :param key
@@ -66,13 +70,25 @@ class LinkedList:
         :return:
         """
         new_node = _Node(key)
-        i = ll.index(prev_key)
+        i = ll.index(prev_key)  # this gets an error... what is ll meant to be?
         node = self._head
         for n in range(i):
             node = node.next_node
         new_node.next_node = node.next_node
         node.next_node = new_node
         self._size +=1
+
+    def lst_in_mid(self, prev, key):
+        """
+        Insert a new node, with key *key*, after the node *prev* in the list
+        :param prev: the _Node object to be inserted after
+        :param key: the key of the new node to be inserted
+        :return:
+        """
+        new_node = _Node(key)  # make a node from your key
+        new_node.next_node = prev.next_node  # make that node point at what the previous node is currently pointing at
+        prev.next_node = new_node  # make the previous node point at the new node
+        self._size += 1
 
     def list_search(self, key):
         """
@@ -107,6 +123,9 @@ class LinkedList:
 
     def __str__(self):
         return " ".join([str(item) for item in self])
+
+
+
 
 # TODO check these work properly (not tested yet)
 
