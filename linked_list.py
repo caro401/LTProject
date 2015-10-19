@@ -15,7 +15,7 @@ class LinkedList:
     def head(self):
         return self._head
 
-    def list_insert_head(self, key): # TODO error handling
+    def list_insert_head(self, key):  # TODO error handling
         """
         Insert key at the head of the list.
         :param key: key of item to be inserted
@@ -29,7 +29,7 @@ class LinkedList:
             self._tail = self._head
         self._size += 1
 
-    def list_insert_tail(self, key): # TODO error handling
+    def list_insert_tail(self, key):  # TODO error handling
         """
         Insert an item at the tail of the list
         :param key: key to be inserted
@@ -43,7 +43,7 @@ class LinkedList:
             n.next_node= self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
 
-    def list_insert_middle(self, prev, key): # TODO error handling
+    def list_insert_middle(self, prev, key):  # TODO error handling
         """
         Insert a new node, with key *key*, after the node *prev* in the list
         :param prev:  the _Node object to be inserted after
@@ -55,7 +55,7 @@ class LinkedList:
         prev.next_node = new_node  # make the previous node point at the new node
         self._size += 1  # increase size by 1
 
-    def list_search(self, key): # TODO error handling
+    def list_search(self, key):  # TODO error handling
         """
         Traverse the linked list until you find a node with the specified key
         :param key: The key you are looking for
@@ -66,7 +66,7 @@ class LinkedList:
             x = x.next_node  # look at the next node in the list
         return x  # this executes when you have run out of list, or matched the key
 
-    def list_delete(self, node): # TODO error handling
+    def list_delete(self, node):  # TODO error handling
         """
         Delete the specified node from the list, by changing the pointer on the node before to point at the next node.
         :param node: the _Node item you want to delete
@@ -89,8 +89,31 @@ class LinkedList:
     def __str__(self):
         return " ".join([str(item) for item in self])
 
+    def binary_search(arr, k):
+        insertionSort(arr)
+        # k is the item that we are looking for
+        # max_i and min_i are the boundaries (the indexes of the max and min value)
+        max_i = len(arr) - 1
+        min_i = 0
+        while min_i <= max_i:  # while there are sth to search for between the boundaries
+            mid_i = (min_i + max_i)//2
+            if arr[mid_i] == k:  # if arr[mid_i] is k
+                return mid_i
+            elif k > arr[mid_i]:  # if arr[mid_i] is smaller than k
+                min_i = mid_i + 1
+            else:  # now we know that the mid_i item is bigger than k
+                max_i = mid_i - 1
+        return "key not found"  # when key is not in the list
 
-
+    def insertionSort(alist):
+        for index in range(1, len(alist)):
+            currentvalue = alist[index]
+            position = index-1
+            while position >= 0 and alist[position]>currentvalue:
+                alist[position + 1] = alist[position]
+                position -= 1
+            alist[position + 1] = currentvalue
+            return alist
 
 # TODO error handling generally
 
@@ -107,4 +130,6 @@ if __name__ == "__main__":
     print(ll)
     ll.list_insert_middle(ll.head.next_node, "dave")
     ll.list_insert_middle(ll.head.next_node, "greg")
+    print(ll)
+    ll.binary_search(20)
     print(ll)
