@@ -26,9 +26,9 @@ class NGramModel:
             # tokenise the file using the NLTK word_tokenise() function
             tokens_list = word_tokenize(text)
 
-        # put these tokens into a linked list
+        # we have a module object linked_list (imported) that provides a function called LinkedList()
         tokens_ll = linked_list.LinkedList()
-        for tok in tokens_list:
+        for tok in tokens_list:   # put these tokens into a linked list
             tokens_ll.list_insert_tail(tok)
 
         # insert sentence start token at start of text, sentence end token at end
@@ -36,7 +36,7 @@ class NGramModel:
         tokens_ll.list_insert_tail("</s>")
 
         # search tokens_ll for instances of _Node with key ".", when find one, insert two nodes: </s> and <s>
-        x = tokens_ll.head
+        x = tokens_ll.head  # Shouldn't it be _head? (I suppose we are using this from the module)
         while x is not None:
             if x.key == ".":  # when you find a full stop
                 tokens_ll.list_insert_middle(x, "</s>")  # insert end of sentence marker
@@ -74,7 +74,7 @@ class NGramModel:
         while y is not None:  # ie while the n-gram won't go off the end of the list
 
             # build the key from the values of the nodes between x and y inclusive
-            k = x.key
+            k = x.key  # the n-gram
             iter_node = x
             for i in range(n-1):
                 iter_node = iter_node.next_node
@@ -95,4 +95,4 @@ class NGramModel:
 if __name__ == "__main__":
     mod = NGramModel("sml_test.txt", 2)
     # print(mod.tokenise())
-    print(mod.ngram_count(3))
+    print(mod.ngram_count(1))
