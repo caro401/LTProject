@@ -89,31 +89,29 @@ class LinkedList:
     def __str__(self):
         return " ".join([str(item) for item in self])
 
-    def binary_search(arr, k):
-        insertionSort(arr)
-        # k is the item that we are looking for
-        # max_i and min_i are the boundaries (the indexes of the max and min value)
-        max_i = len(arr) - 1
-        min_i = 0
-        while min_i <= max_i:  # while there are sth to search for between the boundaries
-            mid_i = (min_i + max_i)//2
-            if arr[mid_i] == k:  # if arr[mid_i] is k
-                return mid_i
-            elif k > arr[mid_i]:  # if arr[mid_i] is smaller than k
-                min_i = mid_i + 1
-            else:  # now we know that the mid_i item is bigger than k
-                max_i = mid_i - 1
-        return "key not found"  # when key is not in the list
+    # only some items in the linked list are sorted.
+    def insertionSort(self):
+        h = self.head  # h is the first (the leftmost) item in the linked list
+        sortedList= h  # [position]
+        h = h.next_node
+        sortedList.next_node = None
+        while h is not None:
+            currentvalue = h
+            h = h.next_node
+            if currentvalue.key < sortedList.key:
+                currentvalue.next_node = sortedList  # make currentvalue point at the bigger sortedList
+                sortedList = currentvalue # why?
+                #sortedList.next_node = h  # make sortedList point at the item which currentvalue was pointing
 
-    def insertionSort(alist):
-        for index in range(1, len(alist)):
-            currentvalue = alist[index]
-            position = index-1
-            while position >= 0 and alist[position]>currentvalue:
-                alist[position + 1] = alist[position]
-                position -= 1
-            alist[position + 1] = currentvalue
-            return alist
+            # TODO  fix and comment
+            else:  # if currentvalue.key > sortedListed.key
+                search = sortedList
+                while search.next_node is not None and currentvalue.key > search.next_node.key:
+                    search = search.next_node
+                currentvalue.next_node = search.next_node
+                search.next_node = currentvalue
+        return sortedList
+
 
 # TODO error handling generally
 
@@ -131,5 +129,6 @@ if __name__ == "__main__":
     ll.list_insert_middle(ll.head.next_node, "dave")
     ll.list_insert_middle(ll.head.next_node, "greg")
     print(ll)
-    ll.binary_search(20)
+    ll.insertionSort()
     print(ll)
+
