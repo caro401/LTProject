@@ -90,20 +90,20 @@ class LinkedList:
         return " ".join([str(item) for item in self])
 
     # only some items in the linked list are sorted.
-    def insertionSort(self):
+    def insertion_Sort(self):
         h = self.head  # h is the first (the leftmost) item in the linked list
         sortedList= h  # [position]
         h = h.next_node
         sortedList.next_node = None
+        print(sortedList.key, "Hello")
         while h is not None:
             currentvalue = h
             h = h.next_node
             if currentvalue.key < sortedList.key:
-                currentvalue.next_node = sortedList  # make currentvalue point at the bigger sortedList
-                sortedList = currentvalue # why?
-                #sortedList.next_node = h  # make sortedList point at the item which currentvalue was pointing
+                currentvalue.next_node = sortedList  # make currentvalue point at sortedList
+                #sortedList = currentvalue  # why?
+                sortedList.next_node = h  # make sortedList point at the item which currentvalue was pointing
 
-            # TODO  fix and comment
             else:  # if currentvalue.key > sortedListed.key
                 search = sortedList
                 while search.next_node is not None and currentvalue.key > search.next_node.key:
@@ -112,6 +112,23 @@ class LinkedList:
                 search.next_node = currentvalue
         return sortedList
 
+    def insertionSort(self):
+        h = self.head  # the leftmost item in the list
+        position = h  # the "previous item"
+        h = h.next_node  # the current key
+        while h is not None:
+            currentkey = h
+            h = h.next_node  # move on to the next item
+            if currentkey.key < position.key:  # find the place to insert currentkey
+                he = self.head
+                while he is not None:
+                    prev = he
+                    if prev.next_node.key > currentkey.key:
+                        list_insert_middle(prev, currentkey) # this returns an error, but self.list_insert...is not working
+                    he = he.next_node
+            else:  # currentkey is larger than position key
+                position.next_node = currentkey
+        return self  # what should I return?
 
 # TODO error handling generally
 
@@ -124,11 +141,10 @@ if __name__ == "__main__":
     ll.list_insert_head("bob")
     ll.list_insert_head("frank")
     print(ll)
-    ll.list_insert_tail("charles")
-    print(ll)
-    ll.list_insert_middle(ll.head.next_node, "dave")
-    ll.list_insert_middle(ll.head.next_node, "greg")
-    print(ll)
+    #ll.list_insert_tail("charles")
+    #print(ll)
+    #ll.list_insert_middle(ll.head.next_node, "dave")
+    #ll.list_insert_middle(ll.head.next_node, "greg")
+    #print(ll)
     ll.insertionSort()
-    print(ll)
-
+    print(ll, "hello")
