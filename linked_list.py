@@ -24,13 +24,14 @@ class LinkedList:
     def head(self):
         return self._head
 
-    def list_insert_head(self, key):  # TODO error handling
+    def list_insert_head(self, new_node):  # TODO error handling
         """
-        Insert key at the head of the list.
-        :param key: key of item to be inserted
+        Insert a new node (from an existing node or a key) at the head of the list.
+        :param new_node: thing  to be inserted
         :return:
         """
-        new_node = _Node(key)
+        if type(new_node) is not _Node:  # if the thing isnt already a node, make it a node
+            new_node = _Node(new_node)
         new_node.next_node = self._head  # make item point to the current head of the list
 
         self._head = new_node  # make item be the new head of the list
@@ -38,48 +39,36 @@ class LinkedList:
             self._tail = self._head
         self._size += 1
 
-    def list_insert_tail(self, key):  # TODO error handling
-        """
-        Insert an item at the tail of the list
-        :param key: key to be inserted
-        :return:
-        """
+    def list_insert_tail(self, new_node):  # add item (key or node) at tail of list, used in mergesort
         n = self._tail
-        self._tail = _Node(key)
+        if type(new_node) is not _Node:
+            self._tail = _Node(new_node)
+        else:
+            self._tail = new_node
         if self._size == 0:  # if this is the only item
             self._head = self._tail  # make it be the first item too
         else:
-            n.next_node= self._tail  # update the pointer on the thing that used to be at the end
+            n.next_node = self._tail  # update the pointer on the thing that used to be at the end
         self._size += 1
 
-    def list_insert_middle(self, prev, key):  # TODO error handling
+    def list_insert_middle(self, prev, new_node):  # TODO error handling
         """
         Insert a new node, with key *key*, after the node *prev* in the list
         :param prev:  the _Node object to be inserted after
         :param key:  the key of the new node to be inserted
         :return:
         """
-        new_node = _Node(key)  # make a node from key
+        if type(new_node) is not _Node:
+            new_node = _Node(new_node)  # make a node from key
         new_node.next_node = prev.next_node  # make that node point at what the previous node is currently pointing at
         prev.next_node = new_node  # make the previous node point at the new node
         self._size += 1  # increase size by 1
-
-    def list_search_trivial(self, key):  # TODO error handling
-        """
-        Traverse the linked list until you find a node with the specified key
-        :param key: The key you are looking for
-        :return: The _Node object with the key you are looking for, or None if it is not in the list
-        """
-        x = self._head  # start at the head of the list
-        while x is not None and x.key != key:  # while there is still a node to look at, and you don't match the key
-            x = x.next_node  # look at the next node in the list
-        return x  # this executes when you have run out of list, or matched the key
 
     def list_delete(self, node):  # TODO error handling
         """
         Delete the specified node from the list, by changing the pointer on the node before to point at the next node.
         :param node: the _Node item you want to delete
-        :return:
+        :return: the node you just removed
         """
         prev = self._head  # start at the head of the list
         if prev is not None:  # if there are some items in the list
@@ -89,6 +78,21 @@ class LinkedList:
             if prev.next_node is not None:  # if the node you are looking at when you broke out of the loop has a next
                 prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
         return node
+
+    def find_mid(self):  # used in mergesort, returns the middle node of a linked list
+        x = self.head
+        y = self.head
+        while y is not None and y.next_node is not None:
+            x = x.next_node
+            y = y.next_node.next_node
+        return x
+
+    def pop(self):  # remove item at head of list, return it. used in mergesort
+        # TODO error handling (empty list)
+        n = self._head
+        self._head = self._head.next_node
+        self._size -= 1
+        return n
 
     def swap_adjacent(self, prev=None):
         """
@@ -183,7 +187,7 @@ class LinkedList:
                 position.next_node = currentkey
         # return self  # what should I return?  nothing... you are just updating the properties of your linked list
 
-    def insertsort(self):
+    def insertsort(self):  # this one is the working one!
         main = self.head.next_node  # this is the value from the main for loop on a list (start at second item)
         while main is not None:  # while there are still unchecked items in the list
             print("main is", main.key)
@@ -211,6 +215,53 @@ class LinkedList:
             # pointer still exist
 
 
+    # TODO get this working!!!
+    def mergesort(self):  # something weird is happening with the list getting modified... # TODO fix this!
+        if self.head is None or self.head.next_node is None:  # list of 0 or 1 things - trivially sorted
+            return self
+        else:
+            leftlist = LinkedList(self.head)  # the left half of the list starts here
+            # find the middle node
+            mid = self.find_mid(self)
+            if mid.next_node is not None:
+                rightlist = LinkedList(mid.next_node)
+                mid.next_node = None  # divide the two parts
+            else:
+                rightlist = LinkedList(mid)
+                leftlist.head.next_node = None
+
+            print("right half starts at", rightlist.head.key)
+
+            print("call mergesort", leftlist.head.key)
+            print("ll is now", ll)
+            left = self.mergesort(leftlist)
+            print("call mergesort", rightlist.head.key)
+            print("ll is now", ll)
+            right = self.mergesort(rightlist)
+            print("merging! L {} and R {}".format(left, right))
+            lst = self.merge(left, right)
+            print("MERGED", self)
+            return lst
+
+    def merge(self, l, r):
+        merged = LinkedList()
+        print("left head {}, right head {}".format(l.head.key, r.head.key))
+        while l.head is not None or r.head is not None:  # there are items remaining in the left sublist
+            if l.head is None:  # left sublist is empty
+                print("if!")
+                self.list_insert_tail(merged, pop(r))  # remove the node at the head of r and push it to the new ll
+            elif r.head is None:   # right sublist is empty
+                print("elif")
+                self.list_insert_tail(merged, pop(l))  # remove the node at the head of l and push to new ll
+            else:  # both sublists still have stuff in
+                if l.head.key <= r.head.key:
+                    print("l is smaller than r")
+                    self.list_insert_tail(merged, pop(l))  # remove the node at the head of l and push to new ll
+                else:  # r.head < l.head
+                    print("r is smaller?")
+                    list_insert_tail(merged, pop(r))  # remove the node at the head of l and push to new ll
+        print(merged)
+        return merged
 
 
 
