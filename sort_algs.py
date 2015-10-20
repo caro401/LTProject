@@ -83,8 +83,8 @@ def push(ll, n):  # add item at head of list
 
 def pop(ll):  # delete item at head of list, return it
     # TODO error handling (empty list)
-    n = ll.head
-    ll.head = ll.head.next_node
+    n = ll._head
+    ll._head = ll._head.next_node
     ll._size -= 1
     return n
 
@@ -96,6 +96,8 @@ def peek(ll):  # return node at head of list
 
 
 
+
+
 if __name__ == "__main__":
     # test code goes here!
     ll = linked_list.LinkedList()
@@ -103,5 +105,5 @@ if __name__ == "__main__":
         ll.list_insert_tail(i)
     print(ll)
 
-    mergesort(ll)
+    insertsort(ll)
     print(ll)
