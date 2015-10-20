@@ -114,21 +114,26 @@ class LinkedList:
 
     def insertionSort(self):
         h = self.head  # the leftmost item in the list
-        position = h  # the "previous item"
+        position = h  # the "previous item"  (the one you are doing the main for loop over?)
         h = h.next_node  # the current key
         while h is not None:
-            currentkey = h
+            currentkey = h  # the key you are currently checking against
+            print(currentkey.key)
             h = h.next_node  # move on to the next item
             if currentkey.key < position.key:  # find the place to insert currentkey
+                print("Found one bigger!", position.key)
                 he = self.head
                 while he is not None:
                     prev = he
                     if prev.next_node.key > currentkey.key:
-                        list_insert_middle(prev, currentkey) # this returns an error, but self.list_insert...is not working
+                        self.list_insert_middle(prev, currentkey) # this returns an error, but self.list_insert...is not working
                     he = he.next_node
             else:  # currentkey is larger than position key
                 position.next_node = currentkey
-        return self  # what should I return?
+        # return self  # what should I return?  nothing... you are just updating the properties of your linked list
+
+
+
 
 # TODO error handling generally
 
@@ -136,15 +141,8 @@ class LinkedList:
 if __name__ == "__main__":
     # test code goes here!
     ll = LinkedList()
-    ll.list_insert_head("fred")
+    for i in [5, 2, 9,8,1,3,6,7, 14]:
+        ll.list_insert_tail(i)
     print(ll)
-    ll.list_insert_head("bob")
-    ll.list_insert_head("frank")
-    print(ll)
-    #ll.list_insert_tail("charles")
-    #print(ll)
-    #ll.list_insert_middle(ll.head.next_node, "dave")
-    #ll.list_insert_middle(ll.head.next_node, "greg")
-    #print(ll)
     ll.insertionSort()
     print(ll, "hello")
