@@ -11,6 +11,15 @@ class LinkedList:
         self._tail = tail
         self._size = 0
 
+    def __iter__(self):
+        current = self._head
+        while current:
+            yield current.key
+            current = current.next_node
+
+    def __str__(self):
+        return " ".join([str(item) for item in self])
+
     @property
     def head(self):
         return self._head
@@ -55,7 +64,7 @@ class LinkedList:
         prev.next_node = new_node  # make the previous node point at the new node
         self._size += 1  # increase size by 1
 
-    def list_search(self, key):  # TODO error handling
+    def list_search_trivial(self, key):  # TODO error handling
         """
         Traverse the linked list until you find a node with the specified key
         :param key: The key you are looking for
@@ -81,15 +90,55 @@ class LinkedList:
                 prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
         return node
 
+    def swap_adjacent(self, prev=None):
+        """
+        Swap the two nodes immediately following the node specified. If prev is None, swap the first two nodes (since
+        the head of a list has no previous node)
+        :param prev: the node before the pair you want to switch
+        :return:
+        """
+        # TODO error handling (eg when a, b are out of list)
+        if prev is None:  # swap first and second items
+            a = self.head
+            b = self.head.next_node
+            a.next_node = b.next_node
+            self._head = b
+            b.next_node = a
+        else:
+            a = prev.next_node
+            b = prev.next_node.next_node
+            a.next_node = b.next_node
+            prev.next_node = b
+            b.next_node = a
+        if a.next_node is None:
+            self._tail = a
 
-    def __iter__(self):
-        current = self._head
-        while current:
-            yield current.key
-            current = current.next_node
+    def swap(self, before_a, before_b):
+        """
+        Swap the nodes after the two nodes specified as arguments, by updating the pointers to them
+        :param before_a: node before the first node you want to swap
+        :param before_b: node before the second node you want to swap
+        :return: self
+        """
+        # TODO error handling as above - check a and b exist
+        if before_a is None:
+            a = self.head
+        else:
+            a = before_a.next_node
+        if a == before_b:  # ie the nodes are adjacent
+            self.swap_adjacent(before_a)
+            return self
 
-    def __str__(self):
-        return " ".join([str(item) for item in self])
+        if before_b is None:
+            b = self.head
+        else:
+            b = before_b.next_node
+        before_a.next_node = b
+        before_b.next_node = a
+        a.next_node, b.next_node = b.next_node, a.next_node
+        return self
+
+
 
     # only some items in the linked list are sorted.
     def insertion_Sort(self):
@@ -174,5 +223,10 @@ if __name__ == "__main__":
     for i in [5, 2, 9,8,1,3,6,7, 14]:
         ll.list_insert_tail(i)
     print(ll)
-    ll.insertsort()
-    print(ll, "hello")
+    befa = ll.head.next_node.next_node
+    befb = ll.head.next_node.next_node.next_node.next_node
+    print(befa.key, befb.key)
+    ll.swap_adjacent(befa)
+    print(ll)
+    ll.swap(befa, befb)
+    print(ll)
