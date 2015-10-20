@@ -81,7 +81,6 @@ class LinkedList:
                 prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
         return node
 
-
     def __iter__(self):
         current = self._head
         while current:
