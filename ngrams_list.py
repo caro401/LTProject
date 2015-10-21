@@ -1,4 +1,5 @@
 from nltk import word_tokenize
+import random
 import linked_list
 
 
@@ -11,22 +12,22 @@ class NGramModel:
         """
         self.file = file
         self.n = n
-        self.tokens = self.tokenise()
+        self.tokens = self.tokenise()  # linked list of tokens of text in order, including sentence start/end
 
     def tokenise(self):  # TODO test!
         """
         Tokenise the file using NLTK, add sentence start/end tokens.
         :return: linked list of tokens, including start/end of sentence tokens
         """
-        # read in file
         # TODO exception handling!
+        # read in file
         with open(self.file) as fin:
             text = fin.read()
 
             # tokenise the file using the NLTK word_tokenise() function
             tokens_list = word_tokenize(text)
 
-        # we have a module object linked_list (imported) that provides a function called LinkedList()
+        # we have a module object linked_list (imported) that provides a class called LinkedList()
         tokens_ll = linked_list.LinkedList()
         for tok in tokens_list:   # put these tokens into a linked list
             tokens_ll.list_insert_tail(tok)
@@ -36,7 +37,7 @@ class NGramModel:
         tokens_ll.list_insert_tail("</s>")
 
         # search tokens_ll for instances of _Node with key ".", when find one, insert two nodes: </s> and <s>
-        x = tokens_ll.head  # Shouldn't it be _head? (I suppose we are using this from the module)
+        x = tokens_ll.head  # Shouldn't it be _head? (I suppose we are using this from the module)  # no, cos @property
         while x is not None:
             if x.key == ".":  # when you find a full stop
                 tokens_ll.list_insert_middle(x, "</s>")  # insert end of sentence marker
@@ -45,7 +46,7 @@ class NGramModel:
 
         return tokens_ll
 
-    def unigram_count(self):  # TODO test! compare to NLTK output?
+    def unigram_count(self):  # TODO test! compare to NLTK output?  this is now redundant...
         """
         Work out the counts of all the unigrams in the list of tokens.
         :return: dictionary of all unigrams and associated counts
@@ -91,8 +92,56 @@ class NGramModel:
             y = y.next_node
         return ngram_dict
 
+    def make_bigram_model(self):
+        word = self.tokens.head
+        bigrams_lst = linked_list.LinkedList()  # this stores bigrams, key = first word, value = dict of possible second words and probabilities
+        prev_word = ""
+        while word:  # traverse the list of tokens to the end
+            if prev_word != "":
+                pass
+                # found = bigrams_lst.find(prev_word.key)  # node if found, None if not
+                # found_bigrams = bigrams_lst.find(prev_word.key)
+                # if not found:  # prev_word doesn't have any bigrams yet
+                    # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
+                    # add entry to this dictionary data[word] = 1
+                # else:  # prev_word already has some bigrams
+                    # found.freq += 1
+                    # if word in found_bigrams.data:  # that bigram has been seen before
+                        # found_bigrams.data[word] += 1  # increment its count
+                    # else:   # not seen that bigram yet
+                        # found_bigrams.data[word] = 1  # add a new entry to the dictionary
+            prev_word = word
+            word = word.next_node
+
+        # turn counts into probabilities
+        # firstword = bigrams_lst.head
+        # while firstword:  # iterate through bigrams list
+            # for secondword in firstword.data:
+                # prob = firstword.data[secondword]/firstword.freq
+                # firstword.data[secondword] = prob  # replace counts in bigrams dict with relative probability
+        return bigrams_lst
+
+    def generate_word(self, probDict):  # pass this a dictionary of probabilities (_Node.data)
+        r = random.random()
+        cumulative_prob = 0
+        for word in probDict:
+            cumulative_prob += probDict[word]
+            if cumulative_prob > r:
+                return word
+
+    def generate_sentence(self):
+        mod = self.make_bigram_model()
+        text = []
+        prev_word = "<s>"  # start with a beginning of sentence marker
+        while prev_word != "<\s>":  # keep going until you find an end of sentence marker
+            pass
+            # node = mod.find(prev_word)
+            # new_word = self.generate_word(node.data)
+            # text.append(new_word)
+            # prev_word = new_word
+        return " ".join(text[1:-1])  # dont want to return the start/end of sentence markers
 
 if __name__ == "__main__":
     mod = NGramModel("sml_test.txt", 2)
     # print(mod.tokenise())
-    print(mod.ngram_count(1))
+    print(mod.ngram_count(3))
