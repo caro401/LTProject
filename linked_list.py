@@ -1,6 +1,7 @@
 class _Node:
-    def __init__(self, key, data=None, next_node=None):
+    def __init__(self, key, data=None, freq=None,  next_node=None):
         self.key = key
+        self.freq = freq
         self.data = data
         self.next_node = next_node
 
