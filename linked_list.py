@@ -158,10 +158,55 @@ class LinkedList:
                 move_node = self.list_delete(main)  # cut out the main node
                 self.list_insert_middle(compare, move_node.key)  # insert it after the last node you found that was smaller
                                                                # main and not None
-            # print(self)
             main = main.next_node  # look at the next node. This works because although you have cut the pointer to main
             # by using list_delete, you made a new node with its key only, and the original main node, and its next_node
             # pointer still exist
+
+    def binary_search(self, key):
+        """
+        Find the key using binary search
+        :param key: the key to be found
+        :return: node
+        """
+        self.insertionSort
+        max_i = self._size - 1
+        min_i = 0
+        mid_i = (min_i + max_i)//2
+        splitpoint = self.head
+        for i in range(min_i, mid_i):
+            splitpoint = splitpoint.next_node
+        print("the first splitpoint is", splitpoint.key)
+        while min_i < max_i and splitpoint.key != key and splitpoint.next_node is not None:
+            if splitpoint.key < key:  # the left part of the list
+                print("splitpoint is smaller than key, to the left")
+                min_i = mid_i + 1
+                print("boundary:", min_i, max_i)
+                mid_i = (min_i + max_i)//2
+                if min_i == max_i:
+                    splitpoint = splitpoint.next_node
+                    if splitpoint.key != key:
+                        print("key not found in the list, None returned")
+                        return None
+                else:
+                    for i in range(min_i, mid_i+1):
+                        splitpoint = splitpoint.next_node
+                print("splitpoint is updated to", splitpoint.key)
+                continue
+            else:  # if splitpoint.key is bigger than the key (the right part of the list)
+                print("splitpoint is bigger than key, to the right")
+                max_i = mid_i
+                print("boundary:", min_i, max_i)
+                mid_i = (min_i + max_i)//2
+                splitpoint = self.head
+                for i in range(0, mid_i):
+                    splitpoint = splitpoint.next_node
+                print("splitpoint is updated to", splitpoint.key)
+                continue
+        if splitpoint is not None:
+            print("splitpoint (Node) returned, the key is", splitpoint.key)
+            return splitpoint
+
+
 
     def mergsesort(self):
         # This is a method to make the list mergesort itself
@@ -275,7 +320,9 @@ if __name__ == "__main__":
     #ll.insertionSort()
     #print(ll)
     ll = LinkedList()
-    for i in [5, 2, 9,8,15, 45, 4, 1,3,6,7, 14]:
+    for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15]:
         ll.list_insert_tail(i)
     ll.quicksort()
     print(ll)
+    ll.binary_search(100)
+    print(ll, "L+L")
