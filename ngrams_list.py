@@ -11,7 +11,7 @@ class NGramModel:
         """
         self.file = file
         self.n = n
-        self.tokens = self.tokenise()
+        self.tokens = self.tokenise()  # linked list of tokens of text in order, including sentence start/end
 
     def tokenise(self):  # TODO test!
         """
@@ -45,7 +45,7 @@ class NGramModel:
 
         return tokens_ll
 
-    def unigram_count(self):  # TODO test! compare to NLTK output?
+    def unigram_count(self):  # TODO test! compare to NLTK output?  this is now redundant...
         """
         Work out the counts of all the unigrams in the list of tokens.
         :return: dictionary of all unigrams and associated counts
@@ -91,8 +91,37 @@ class NGramModel:
             y = y.next_node
         return ngram_dict
 
+    def make_bigram_model(self):
+        word = self.tokens.head
+        bigrams_lst = linked_list.LinkedList()  # this stores bigrams, key = first word, value = dict of possible second words and probabilities
+        prev_word = ""
+        while word:  # traverse the list of tokens to the end
+            if prev_word != "":
+                pass
+                # found = bigrams_lst.find(prev_word.key)  # node if found, None if not
+                # found_bigrams = bigrams_lst.find(prev_word.key)
+                # if not found:  # prev_word doesn't have any bigrams yet
+                    # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
+                    # add entry to this dictionary data[word] = 1
+                # else:  # prev_word already has some bigrams
+                    # found.freq += 1
+                    # if word in found_bigrams.data:  # that bigram has been seen before
+                        # found_bigrams.data[word] += 1  # increment its count
+                    # else:   # not seen that bigram yet
+                        # found_bigrams.data[word] = 1  # add a new entry to the dictionary
+            prev_word = word
+            word = word.next_node
+
+        # turn counts into probabilities
+        # firstword = bigrams_lst.head
+        # while firstword:  # iterate through bigrams list
+            # for secondword in firstword.data:
+                # prob = firstword.data[secondword]/firstword.freq
+                # firstword.data[secondword] = prob  # replace counts in bigrams dict with relative probability
+        return bigrams_lst
+
 
 if __name__ == "__main__":
     mod = NGramModel("sml_test.txt", 2)
     # print(mod.tokenise())
-    print(mod.ngram_count(1))
+    print(mod.ngram_count(3))
