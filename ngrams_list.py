@@ -134,6 +134,7 @@ class NGramModel:
         text = []
         prev_word = "<s>"  # start with a beginning of sentence marker
         while prev_word != "<\s>":  # keep going until you find an end of sentence marker
+            pass
             # node = mod.find(prev_word)
             # new_word = self.generate_word(node.data)
             # text.append(new_word)
