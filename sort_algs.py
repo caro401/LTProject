@@ -119,5 +119,5 @@ if __name__ == "__main__":
         ll.list_insert_tail(i)
     print(ll)
 
-    mergesort(ll)
+    quicksort(ll.head, ll._tail)
     print(ll)

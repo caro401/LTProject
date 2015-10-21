@@ -142,7 +142,6 @@ class LinkedList:
         a.next_node, b.next_node = b.next_node, a.next_node
         return self
 
-
     def insertionSort(self):
         main = self.head.next_node  # this is the value from the main for loop on a list (start at second item)
         while main is not None:  # while there are still unchecked items in the list
@@ -217,6 +216,42 @@ class LinkedList:
         print(merged)
         return merged
 
+    def quicksort(self):
+        return self.quicksort_recurse(self, self.head, self._tail)
+
+    def quicksort_recurse(self, lst, start, end):
+        if start and start.key != end.key:
+            print("partitioning", start.key, end.key)
+            pivot = self.partition(lst, start, end)
+            self.quicksort_recurse(lst, start, pivot)
+            self.quicksort_recurse(lst, pivot.next_node, end)
+
+    def partition(self, lst, start, end):
+        pivot = start
+        i = pivot
+        jprev = pivot  # track the node before j, used for swapping
+        j = pivot.next_node
+        print("j is", j.key)
+        while j != end.next_node:  # assuming unique keys
+            if j.key < pivot.key:
+                # swap  i and j
+                if i.next_node.key != j.key:
+                    print("swapping {} and {}".format(i.next_node.key, j.key))
+                    lst.swap(i, jprev)
+                print("after swapping", lst)
+                i = i.next_node
+            jprev = j
+            j = j.next_node
+            if j:
+                print("j is now", j.key)
+        # swap pivot and j
+        pivot.key, i.key = i.key, pivot.key
+        pivot.data, i.data = i.data, pivot.data
+        print("pivot {}, i {}".format(pivot.key, i.key))
+        print(ll)
+        return i
+
+
 
 
 # TODO error handling generally
@@ -235,7 +270,12 @@ if __name__ == "__main__":
     print(ll)
     ll.swap(befa, befb)
     print(ll)
-    ll.mergsesort()
-    print(ll)
-    ll.insertionSort()
+    #ll.mergsesort()
+    #print(ll)
+    #ll.insertionSort()
+    #print(ll)
+    ll = LinkedList()
+    for i in [5, 2, 9,8,15, 45, 4, 1,3,6,7, 14]:
+        ll.list_insert_tail(i)
+    ll.quicksort()
     print(ll)
