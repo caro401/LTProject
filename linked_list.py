@@ -143,73 +143,23 @@ class LinkedList:
         return self
 
 
-
-    # only some items in the linked list are sorted.
-    def insertion_Sort(self):
-        h = self.head  # h is the first (the leftmost) item in the linked list
-        sortedList= h  # [position] this is the first node of the sorted list
-        h = h.next_node  # start using the second item in the list as the node to introduce
-        sortedList.next_node = None  # so it is a list of one thing
-        print(sortedList.key, "Hello")
-        while h is not None:
-            currentvalue = h
-            h = h.next_node
-            if currentvalue.key < sortedList.key:
-                currentvalue.next_node = sortedList  # make currentvalue point at sortedList
-                sortedList = currentvalue  # why?
-                sortedList.next_node = h  # make sortedList point at the item which currentvalue was pointing
-
-            else:  # if currentvalue.key > sortedListed.key
-                search = sortedList
-                while search.next_node is not None and currentvalue.key > search.next_node.key:
-                    search = search.next_node
-                currentvalue.next_node = search.next_node
-                search.next_node = currentvalue
-        return sortedList
-
     def insertionSort(self):
-        h = self.head  # the leftmost item in the list
-        position = h  # the "previous item"  (the one you are doing the main for loop over?)
-        h = h.next_node  # the current key
-        while h is not None:
-            currentkey = h  # the key you are currently checking against
-            print(currentkey.key)
-            h = h.next_node  # move on to the next item
-            if currentkey.key < position.key:  # find the place to insert currentkey
-                print("Found one bigger!", position.key)
-                he = self.head
-                while he is not None:
-                    prev = he
-                    if prev.next_node.key > currentkey.key:
-                        self.list_insert_middle(prev, currentkey) # this returns an error, but self.list_insert...is not working
-                    he = he.next_node
-            else:  # currentkey is larger than position key
-                position.next_node = currentkey
-        # return self  # what should I return?  nothing... you are just updating the properties of your linked list
-
-    def insertsort(self):  # this one is the working one!
         main = self.head.next_node  # this is the value from the main for loop on a list (start at second item)
         while main is not None:  # while there are still unchecked items in the list
-            print("main is", main.key)
             compare = self.head  # this is the thing from the inner loop on an array, start at the start of the list
-            print("comparing with", compare.key)
 
             # this while loop will run from the start of the list until you either run out of nodes, or find one bigger than main
             while compare.next_node is not None and compare.next_node.key < main.key:  # there is a node next, and it is still smaller
-                print("incrementing compare")
                 compare = compare.next_node  # look at the next one
-            print("loop done, compare is", compare.key)
             if compare.key > main.key:  # this catches the case where main is the smallest element in the list so far and
                                         # needs to be inserted at head of list. This is nasty, could do with being tidied
                 move_node = self.list_delete(main)  # cut out main node
-                print("moving (if)", move_node.key)
                 self.list_insert_head(move_node.key)  # insert it at the head
             else:  # all other cases
                 move_node = self.list_delete(main)  # cut out the main node
-                print("moving", move_node.key)
                 self.list_insert_middle(compare, move_node.key)  # insert it after the last node you found that was smaller
                                                                # main and not None
-            print(self)
+            # print(self)
             main = main.next_node  # look at the next node. This works because although you have cut the pointer to main
             # by using list_delete, you made a new node with its key only, and the original main node, and its next_node
             # pointer still exist
@@ -286,4 +236,6 @@ if __name__ == "__main__":
     ll.swap(befa, befb)
     print(ll)
     ll.mergsesort()
+    print(ll)
+    ll.insertionSort()
     print(ll)
