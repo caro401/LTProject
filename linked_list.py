@@ -214,15 +214,18 @@ class LinkedList:
             # by using list_delete, you made a new node with its key only, and the original main node, and its next_node
             # pointer still exist
 
+    def mergsesort(self):
+        # This is a method to make the list mergesort itself
+        return self.mergesort_recurse(self)
 
-    # TODO get this working!!!
-    def mergesort(self):  # something weird is happening with the list getting modified... # TODO fix this!
-        if self.head is None or self.head.next_node is None:  # list of 0 or 1 things - trivially sorted
-            return self
+    def mergesort_recurse(self, lst):  # something weird is happening with the list getting modified... # TODO fix this!
+        # this is the main recursive bit of mergesort
+        if lst.head is None or lst.head.next_node is None:  # list of 0 or 1 things - trivially sorted
+            return lst
         else:
-            leftlist = LinkedList(self.head)  # the left half of the list starts here
+            leftlist = LinkedList(lst.head)  # the left half of the list starts here
             # find the middle node
-            mid = self.find_mid(self)
+            mid = lst.find_mid()
             if mid.next_node is not None:
                 rightlist = LinkedList(mid.next_node)
                 mid.next_node = None  # divide the two parts
@@ -234,32 +237,33 @@ class LinkedList:
 
             print("call mergesort", leftlist.head.key)
             print("ll is now", ll)
-            left = self.mergesort(leftlist)
+            left = self.mergesort_recurse(leftlist)
             print("call mergesort", rightlist.head.key)
             print("ll is now", ll)
-            right = self.mergesort(rightlist)
+            right = self.mergesort_recurse(rightlist)
             print("merging! L {} and R {}".format(left, right))
             lst = self.merge(left, right)
-            print("MERGED", self)
+            print("MERGED", lst)
             return lst
 
     def merge(self, l, r):
+        # this does the merging bit of mergesort
         merged = LinkedList()
         print("left head {}, right head {}".format(l.head.key, r.head.key))
         while l.head is not None or r.head is not None:  # there are items remaining in the left sublist
             if l.head is None:  # left sublist is empty
                 print("if!")
-                self.list_insert_tail(merged, pop(r))  # remove the node at the head of r and push it to the new ll
+                merged.list_insert_tail(r.pop())  # remove the node at the head of r and push it to the new ll
             elif r.head is None:   # right sublist is empty
                 print("elif")
-                self.list_insert_tail(merged, pop(l))  # remove the node at the head of l and push to new ll
+                merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
                 if l.head.key <= r.head.key:
                     print("l is smaller than r")
-                    self.list_insert_tail(merged, pop(l))  # remove the node at the head of l and push to new ll
+                    merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
                 else:  # r.head < l.head
                     print("r is smaller?")
-                    list_insert_tail(merged, pop(r))  # remove the node at the head of l and push to new ll
+                    merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
         print(merged)
         return merged
 
@@ -280,4 +284,6 @@ if __name__ == "__main__":
     ll.swap_adjacent(befa)
     print(ll)
     ll.swap(befa, befb)
+    print(ll)
+    ll.mergsesort()
     print(ll)
