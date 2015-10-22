@@ -15,7 +15,13 @@ class NGramModel:
         self.file = file
         self.n = n
         self.tokens = self.tokenise()  # linked list of tokens of text in order, including sentence start/end
-        self.model = self.make_bigram_model()
+        if self.n == 1:
+            self.model = self.unigram_count()
+        #if self.n == 2:
+        #    self.model = self.make_bigram_model()
+        if self.n > 1:
+            self.model = self.make_ngram_model()
+
 
     def tokenise(self):  # TODO test!
         """
@@ -49,7 +55,7 @@ class NGramModel:
 
         return tokens_ll
 
-    def unigram_count(self):  # TODO this is currently redundant. use it somewhere or delete it
+    def unigram_count(self):
         """
         Work out the counts of all the unigrams in the list of tokens.
         :return: dictionary of all unigrams and associated counts
@@ -71,7 +77,7 @@ class NGramModel:
             unigram_dict[word] = unigram_dict[word]/total_tokens
         return unigram_dict
 
-    def make_bigram_model(self):
+    def make_bigram_model(self):  # TODO delete this when sure you wont need it...
         print("finding bigrams!")
         word = self.tokens.head
         bigrams_lst = linked_list.LinkedList()  # this stores bigrams, key = first word, value = dict of possible second words and probabilities
@@ -82,18 +88,15 @@ class NGramModel:
                     # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
                     bigrams_lst.list_insert_tail(prev_word)
                     bigrams_lst.tail.freq = 1
-                    bigrams_lst.tail.data = {}
-                    # add entry to this dictionary data[word] = 1
-                    bigrams_lst.tail.data[word.key] = 1
+                    bigrams_lst.tail.data = {word.key: 1}
+
                 else:
                     found = bigrams_lst.binary_search(prev_word)  # node if found, None if not
                     if not found:  # prev_word doesn't have any bigrams yet
                         # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
                         bigrams_lst.list_insert_tail(prev_word)
                         bigrams_lst.tail.freq = 1
-                        bigrams_lst.tail.data = {}
-                        # add entry to this dictionary data[word] = 1
-                        bigrams_lst.tail.data[word.key] = 1
+                        bigrams_lst.tail.data = {word.key: 1}
 
                     else:  # prev_word already has some bigrams
                         found.freq += 1
@@ -115,6 +118,51 @@ class NGramModel:
         print("model made!")
         return bigrams_lst
 
+    def make_ngram_model(self):
+        print("finding ngrams!!")
+        word = self.tokens.head
+        trigrams_lst = linked_list.LinkedList()  # this stores bigrams, key = first word, value = dict of possible second words and probabilities
+        wordlist = [" "]*(self.n - 2)
+        wordlist.append("<s>")
+        print("initial", wordlist)
+        while word:
+            if wordlist[0] != " ":
+                print(wordlist)
+                new_key = " ".join(wordlist)
+                if not trigrams_lst.head: # first time through
+                    trigrams_lst.list_insert_tail(new_key)
+                    trigrams_lst.tail.freq = 1
+                    trigrams_lst.tail.data = {word.key: 1}
+                else:
+                    found = trigrams_lst.binary_search(new_key)  # node if found, None if not
+                    if not found:  # prev_word doesn't have any bigrams yet
+                        # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
+                        trigrams_lst.list_insert_tail(new_key)
+                        trigrams_lst.tail.freq = 1
+                        trigrams_lst.tail.data = {word.key: 1}
+
+                    else:  # prev_word already has some bigrams
+                        found.freq += 1
+                        if word.key in found.data:  # that bigram has been seen before
+                            found.data[word.key] += 1  # increment its count
+                        else:   # not seen that bigram yet
+                            found.data[word.key] = 1  # add a new entry to the dictionary
+
+            for i in range(len(wordlist)-1):
+                wordlist[i] = wordlist[i+1]
+            wordlist[-1] = word.key
+            word = word.next_node
+
+        print("doing maths!")
+        firstword = trigrams_lst.head
+        while firstword:  # iterate through bigrams list
+            for secondword in firstword.data:
+                prob = firstword.data[secondword]/firstword.freq
+                firstword.data[secondword] = prob  # replace counts in bigrams dict with relative probability
+            firstword = firstword.next_node
+        print("model made!")
+        return trigrams_lst
+
     @staticmethod
     def generate_word(probDict):  # pass this a dictionary of probabilities (_Node.data)
         r = random.random()
@@ -126,28 +174,33 @@ class NGramModel:
 
     def generate_sentence_unigram(self):
         sentence = []
-        unigrams = self.unigram_count()
         new_word = ""
         count = 0
         while new_word != "</s>" and count < 50:
-            new_word = self.generate_word(unigrams)
+            new_word = self.generate_word(self.model)
             sentence.append(new_word)
             count += 1
         return " ".join(sentence)
 
-
     def generate_sentence(self):
-        text = []
-        prev_word = "<s>"  # start with a beginning of sentence marker
-        count = 0  # just in case it fails to randomly generate an end of sentence tag in a sensible time ...
-        while prev_word != "</s>" and count < 50:  # keep going until you find an end of sentence marker
-            node = self.model.binary_search(prev_word)
-            new_word = self.generate_word(node.data)
-            text.append(new_word)
-            prev_word = new_word
-            count += 1
-        return " ".join(text[:-1])  # dont want to return the end of sentence marker
-        #TODO tidy up the output a bit? get rid of whitespace around punctuation
+        if self.n == 1:
+            return self.generate_sentence_unigram()
+        else:
+            text = []
+            prev_list = [" "]*(self.n - 2)
+            prev_list.append("<s>")  # start with a beginning of sentence marker
+            count = 0  # just in case it fails to randomly generate an end of sentence tag in a sensible time ...
+            while prev_list[-1] != "</s>" and count < 50:  # keep going until you find an end of sentence marker
+                new_key = " ".join(prev_list)
+                node = self.model.binary_search(new_key)
+                new_word = self.generate_word(node.data)
+                text.append(new_word)
+                for i in range(len(prev_list)-1):
+                    prev_list[i] = prev_list[i+1]
+                prev_list[-1] = new_word
+                count += 1
+            return " ".join(text[1:-1])  # dont want to return the end of sentence marker
+            #TODO tidy up the output a bit? get rid of whitespace around punctuation
 
     def n_grams_with(self, word):
         """
@@ -186,9 +239,10 @@ class NGramModel:
         return data.tail.key
 
 if __name__ == "__main__":
-    mod = NGramModel("textfortest.txt", 2)
+    mod = NGramModel("tinytest.txt", 1)
     # print(mod.tokenise())
     #print(mod.generate_sentence())
-    print(mod.unigram_count())
-    print(mod.generate_sentence_unigram())
+    print(mod.model)
+    # print(mod.model.head.data)
+    print(mod.generate_sentence())
 
