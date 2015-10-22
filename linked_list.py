@@ -202,14 +202,18 @@ class LinkedList:
                 if min_i == max_i:  # when min_i == max_i for i in range won't work, have to change point manually
                 # although we have min_i< max_i in the while loop this is still possible as the loop will not break
                 # immediately when min_i == max_i
-                    splitpoint = splitpoint.next_node  # if key is in list it will be this node (then break)
-                    if splitpoint.key != key:  # if splitpoint != key, key is not in the list
+                    splitpoint = splitpoint.next_node  # if key is in list it will be this node
+                    if splitpoint.key == key:
+                        print("splitpoint (Node) returned, the key is", splitpoint.key)
+                        return splitpoint
+                    else:  # if splitpoint != key at this point, key is not in the list
                         print("key not found in the list, None returned")
                         return None
+
                 else:  # normal cases, when min_i < max_i
                     for i in range(min_i, mid_i+1):  # will loop over and stop at the new mid_i
                         splitpoint = splitpoint.next_node
-                print("splitpoint is updated to", splitpoint.key)
+                    print("splitpoint is updated to", splitpoint.key)
                 continue  # go back to the start of while loop and see if the new splitpoint is at a reachable position to the key
             # this will break when 1.) when the key is found  2.) when min_i == max_i 3.) splitpoint.next_node is None
 
@@ -230,7 +234,7 @@ class LinkedList:
         else:   # if key is smaller than all items in the list, it will loop over the "else" part above and
             print("key not found in the list, None returned")  # break when min_i == max_i, but no key is found
 
-    def mergsesort(self):
+    def mergesort(self):
         # This is a method to make the list mergesort itself
         return self.mergesort_recurse(self)
 
@@ -345,5 +349,4 @@ if __name__ == "__main__":
 
     print(ll)
     found = ll.binary_search(45)
-    print(found.key)
     print(ll, "done")
