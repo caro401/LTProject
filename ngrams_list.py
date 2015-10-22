@@ -1,5 +1,6 @@
 # TODO add methods for other values of n (trigram, 4-gram etc)
 # TODO find a way to use the other sort algorithm, something like return which word can go with the most other words?
+# TODO documentation!
 from nltk import word_tokenize
 import random
 import linked_list
@@ -159,16 +160,19 @@ class NGramModel:
             word = word.next_node
             counter += 1
 
+    def most_next_words(self):
+        """
+        Return the word that can occur with the most different words after it
+        :return: word
+        """
+        data = self.model.mergesort()
+        return data.tail.key
 
 if __name__ == "__main__":
     mod = NGramModel("tinytest.txt", 2)
     # print(mod.tokenise())
     print(mod.generate_sentence())
-    words = mod.most_common_words(10)
-    print("model!", mod.model)
-    print(words)
-    for item in words:
-        print(item)
-    print(mod.model)
+    most = mod.most_next_words()
+    print(most)
 
 

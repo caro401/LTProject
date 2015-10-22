@@ -247,39 +247,25 @@ class LinkedList:
                 rightlist = LinkedList(mid)
                 leftlist.head.next_node = None
 
-            print("right half starts at", rightlist.head.key)
-
-            print("call mergesort", leftlist.head.key)
-            print("ll is now", ll)
             left = self.mergesort_recurse(leftlist)
-            print("call mergesort", rightlist.head.key)
-            print("ll is now", ll)
             right = self.mergesort_recurse(rightlist)
-            print("merging! L {} and R {}".format(left, right))
             lst = self.merge(left, right)
-            print("MERGED", lst)
             return lst
 
     @staticmethod
     def merge(l, r):
         # this does the merging bit of mergesort
         merged = LinkedList()
-        print("left head {}, right head {}".format(l.head.key, r.head.key))
         while l.head is not None or r.head is not None:  # there are items remaining in the left sublist
             if l.head is None:  # left sublist is empty
-                print("if!")
                 merged.list_insert_tail(r.pop())  # remove the node at the head of r and push it to the new ll
             elif r.head is None:   # right sublist is empty
-                print("elif")
                 merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
-                if l.head.key <= r.head.key:
-                    print("l is smaller than r")
+                if len(l.head.data) <= len(r.head.data):
                     merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
                 else:  # r.head < l.head
-                    print("r is smaller?")
                     merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
-        print(merged)
         return merged
 
     def quicksort(self):
