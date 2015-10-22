@@ -1,3 +1,4 @@
+#!python3
 # TODO make sure all classes methods have docstrings and full comments
 # TODO check all the methods are doing what we think they are (check edge cases etc)
 # TODO implement error handling
@@ -5,7 +6,7 @@
 
 
 class _Node:
-    def __init__(self, key, data=None, freq=None,  next_node=None):
+    def __init__(self, key, data=None, freq=None, next_node=None):
         self.key = key
         self.freq = freq
         self.data = data
@@ -40,7 +41,7 @@ class LinkedList:
         Insert a new node (from an existing node or a key) at the head of the list.
         :param new_node: thing  to be inserted
         """
-        if type(new_node) is not _Node:  # if the thing isnt already a node, make it a node
+        if type(new_node) is not _Node:  # if the thing isn't already a node, make it a node
             new_node = _Node(new_node)
         new_node.next_node = self._head  # make item point to the current head of the list
 
@@ -55,15 +56,17 @@ class LinkedList:
         :param new_node:  thing to be inserted
         """
         n = self._tail
-        if type(new_node) is not _Node:
+        if type(new_node) is not _Node:  # if the thing isn't already a node, make it a node
             self._tail = _Node(new_node)
         else:
             self._tail = new_node
-        if self._size == 0:  # if this is the only item
-            self._head = self._tail  # make it be the first item too
+        if self._size != 0:
+            n.next_node = self.tail  # if this is not the only item
         else:
-            n.next_node = self._tail  # update the pointer on the thing that used to be at the end
+            self._head = self._tail  # if this is the only item, make it be the first item too
         self._size += 1
+        print("selfhead is", self.head.key, "selftail is", self.tail.key)
+        return self.head, self.tail
 
     def list_insert_middle(self, prev, new_node):  # TODO error handling
         """
@@ -72,7 +75,7 @@ class LinkedList:
         :param key:  the key of the new node to be inserted
         """
         if type(new_node) is not _Node:
-            new_node = _Node(new_node)  # make a node from key
+            new_node = _Node(new_node)  # make a node from key (if it is a key)
         new_node.next_node = prev.next_node  # make that node point at what the previous node is currently pointing at
         prev.next_node = new_node  # make the previous node point at the new node
         self._size += 1  # increase size by 1
@@ -111,7 +114,7 @@ class LinkedList:
     def swap_adjacent(self, prev=None):
         """
         Swap the two nodes immediately following the node specified. If prev is None, swap the first two nodes (since
-        the head of a list has no previous node)
+        the head of a list has no previous node)    (so if you specify 7 in 789, you will get 798 with this method)
         :param prev: the node before the pair you want to switch
         :return:
         """
@@ -134,6 +137,8 @@ class LinkedList:
     def swap(self, before_a, before_b):
         """
         Swap the nodes after the two nodes specified as arguments, by updating the pointers to them
+        (If you specify 1 and 4 in 12345, you will get 15342)
+        (If two nodes are adjacent, it will swap the two nodes after the first specified node. so 34 in 12345 will be 12354)
         :param before_a: node before the first node you want to swap
         :param before_b: node before the second node you want to swap
         :return: self
@@ -169,7 +174,7 @@ class LinkedList:
                 move_node = self.list_delete(main)  # cut out main node
                 self.list_insert_head(move_node)  # insert it at the head
                 main = main.next_node
-            else:  # all other cases
+            else:  # all other cases (compare.key < main.key)
                 temp = main
                 main = main.next_node
                 move_node = self.list_delete(temp)  # cut out the main node
@@ -182,7 +187,7 @@ class LinkedList:
             start = start.next_node
         self._tail = start
 
-    def binary_search(self, key):  #TODO fix weird in here if it isn't in insertionsort
+    def binary_search(self, key):
         """
         Find the key using binary search
         :param key: the key to be found
@@ -201,10 +206,10 @@ class LinkedList:
                 min_i = mid_i + 1  # move the left boundary to mid_i (focus on the right part)
                 mid_i = (min_i + max_i)//2
                 if min_i == max_i:  # when min_i == max_i for i in range won't work, have to change point manually
-                # although we have min_i< max_i in the while loop this is still possible as the loop will not break
-                # immediately when min_i == max_i
+                # (although we have min_i< max_i in the while loop this is still possible as the loop will not break
+                # immediately when min_i == max_i)
                     splitpoint = splitpoint.next_node  # if key is in list it will be this node
-                    if splitpoint.key == key:
+                    if splitpoint.key == key: # see if this is the key
                         return splitpoint
                     else:  # if splitpoint != key at this point, key is not in the list
                         return None
@@ -226,11 +231,12 @@ class LinkedList:
         if min_i != max_i:  # if the while loop breaks because splitpoint happens to be the key, it goes here
             return splitpoint
         else:   # if key is smaller than all items in the list, it will loop over the "else" part above and
-            return None  # break when min_i == max_i, but no key is found
+            return None  # break when min_i == max_i and goes here (no key is found, None is returned)
 
     def mergesort(self):  # NOTE this sorts on the length of the data attribute
         # This is a method to make the list mergesort itself
-        return self.mergesort_recurse(self)
+        print(self.mergesort_recurse(self))
+
 
     def mergesort_recurse(self, lst):  # something weird is happening with the list getting modified... # TODO fix this!
         # this is the main recursive bit of mergesort
@@ -238,13 +244,17 @@ class LinkedList:
             return lst
         else:
             leftlist = LinkedList(lst.head)  # the left half of the list starts here
+            print(leftlist, "leftlist", self._size)
             # find the middle node
             mid = lst.find_mid()
+            print(mid.key, "mid-key")
             if mid.next_node is not None:
                 rightlist = LinkedList(mid.next_node)
+                print(rightlist, "rightlist when mid.next_node is not None")
                 mid.next_node = None  # divide the two parts
             else:
                 rightlist = LinkedList(mid)
+                print(rightlist, "rightlist")
                 leftlist.head.next_node = None
 
             left = self.mergesort_recurse(leftlist)
@@ -257,15 +267,20 @@ class LinkedList:
         # this does the merging bit of mergesort
         merged = LinkedList()
         while l.head is not None or r.head is not None:  # there are items remaining in the left sublist
+            print("get to merge now", l, "<- ->", r, "merged is now", merged)
             if l.head is None:  # left sublist is empty
                 merged.list_insert_tail(r.pop())  # remove the node at the head of r and push it to the new ll
             elif r.head is None:   # right sublist is empty
                 merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
-                if len(l.head.data) <= len(r.head.data):
-                    merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
+                if l.head.key <= r.head.key:  # I fixed this line (it seems that errors come from this, but still not sorting)
+                    print(l.head.key, "this is the thing to pop", merged, "<- is merged")
+                    # remove the node at the head of l and push to new ll
+                    merged.list_insert_tail(l.pop())
                 else:  # r.head < l.head
                     merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
+                    print(merged, "after popping from r", merged.tail.key)
+        print(merged, "merged")
         return merged
 
     def quicksort(self):  # note this sorts in reverse order atm, and on the frequ
@@ -320,14 +335,22 @@ class LinkedList:
 if __name__ == "__main__":
     # test code goes here!
     ll = LinkedList()
-    ll = LinkedList()
-    for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15]:
+    lk = LinkedList()
+    for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15, 20]:
         ll.list_insert_tail(i)
-
     print(ll)
-    ll.binary_search(7)
-    print(ll, "done")
-    print("head {}, tail {}".format(ll.head.key, ll.tail.key))
-    ll.list_insert_tail(4)
-    print(ll, "new")
+    #lk.list_insert_tail(ll.pop())
+    #print(lk)
+
+    #ll.pop()
+    #print(ll)
+    ll.mergesort()
+    print(ll, "what?", ll._size)
+
+
+    #ll.binary_search(7)
+    #print(ll, "done")
+    #ll.swap(ll.binary_search(1), ll.binary_search(4))
+    #print(ll, "that's it")
+    #print("head {}, tail {}".format(ll.head.key, ll.tail.key))
 
