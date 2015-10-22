@@ -1,3 +1,9 @@
+# TODO make sure all classes methods have docstrings and full comments
+# TODO check all the methods are doing what we think they are (check edge cases etc)
+# TODO implement error handling
+# TODO? make UML class diagrams
+
+
 class _Node:
     def __init__(self, key, data=None, freq=None,  next_node=None):
         self.key = key
@@ -24,6 +30,10 @@ class LinkedList:
     @property
     def head(self):
         return self._head
+
+    @property
+    def tail(self):
+        return self._tail
 
     def list_insert_head(self, new_node):  # TODO error handling
         """
@@ -80,6 +90,7 @@ class LinkedList:
                 prev = prev.next_node  # look at the next one
             if prev.next_node is not None:  # if the node you are looking at when you broke out of the loop has a next
                 prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
+        self._size -= 1
         return node
 
     def find_mid(self):  # used in mergesort, returns the middle node of a linked list
@@ -145,7 +156,7 @@ class LinkedList:
         a.next_node, b.next_node = b.next_node, a.next_node
         return self
 
-    def insertionsort(self):
+    def insertionsort(self):  # TODO something weird is happening in here. fix it
         main = self.head.next_node  # this is the value from the main for loop on a list (start at second item)
         while main is not None:  # while there are still unchecked items in the list
             compare = self.head  # this is the thing from the inner loop on an array, start at the start of the list
@@ -165,14 +176,16 @@ class LinkedList:
             # by using list_delete, you made a new node with its key only, and the original main node, and its next_node
             # pointer still exist
 
-    def binary_search(self, key):
+    def binary_search(self, key):  #TODO fix weird in here if it isn't in insertionsort
         """
         Find the key using binary search
         :param key: the key to be found
         :return: node, if not found return None
         """
-        self.quicksort()
+        self.insertionsort()
+        print("The list", self)
         max_i = self._size - 1  # max_i & min_i mark the "boundaries" of the search. now max_i is basically len(list)-1
+        print("max", max_i)
         min_i = 0
         mid_i = (min_i + max_i)//2
         splitpoint = self.head
@@ -217,8 +230,6 @@ class LinkedList:
         else:   # if key is smaller than all items in the list, it will loop over the "else" part above and
             print("key not found in the list, None returned")  # break when min_i == max_i, but no key is found
 
-
-
     def mergsesort(self):
         # This is a method to make the list mergesort itself
         return self.mergesort_recurse(self)
@@ -251,7 +262,8 @@ class LinkedList:
             print("MERGED", lst)
             return lst
 
-    def merge(self, l, r):
+    @staticmethod
+    def merge(l, r):
         # this does the merging bit of mergesort
         merged = LinkedList()
         print("left head {}, right head {}".format(l.head.key, r.head.key))
@@ -282,7 +294,8 @@ class LinkedList:
             self.quicksort_recurse(lst, start, pivot)
             self.quicksort_recurse(lst, pivot.next_node, end)
 
-    def partition(self, lst, start, end):
+    @staticmethod
+    def partition(lst, start, end):  # used in quicksort
         pivot = start
         i = pivot
         jprev = pivot  # track the node before j, used for swapping
@@ -307,6 +320,16 @@ class LinkedList:
         print(ll)
         return i
 
+    def find(self, key):  # the trivial search algorithm, for testing ngram_list
+        node = self.head
+        while node:
+            if node.key == key:
+                return node
+            else:
+                node = node.next_node
+        return None
+
+
 
 
 
@@ -316,24 +339,11 @@ class LinkedList:
 if __name__ == "__main__":
     # test code goes here!
     ll = LinkedList()
-    for i in [5, 2, 9,8,1,3,6,7, 14]:
-        ll.list_insert_tail(i)
-    print(ll)
-    befa = ll.head.next_node.next_node
-    befb = ll.head.next_node.next_node.next_node.next_node
-    print(befa.key, befb.key)
-    ll.swap_adjacent(befa)
-    print(ll)
-    ll.swap(befa, befb)
-    print(ll)
-    #ll.mergsesort()
-    #print(ll)
-    #ll.insertionsort()
-    #print(ll)
     ll = LinkedList()
     for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15]:
         ll.list_insert_tail(i)
-    ll.quicksort()
+
     print(ll)
-    ll.binary_search(-1)
+    found = ll.binary_search(45)
+    print(found.key)
     print(ll, "done")
