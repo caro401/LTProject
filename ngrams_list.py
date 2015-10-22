@@ -1,6 +1,5 @@
 # TODO add methods for other values of n (trigram, 4-gram etc)
 # TODO add method for returning x most common words (sort the list by freq field)
-# TODO add method for returning all n-grams starting with a specific word
 # TODO find a way to use the other sort algorithm, something like return which word can go with the most other words?
 from nltk import word_tokenize
 import random
@@ -80,23 +79,23 @@ class NGramModel:
                     bigrams_lst.tail.freq = 1
                     bigrams_lst.tail.data = {}
                     # add entry to this dictionary data[word] = 1
-                    bigrams_lst.tail.data[word] = 1
+                    bigrams_lst.tail.data[word.key] = 1
                 else:
-                    found = bigrams_lst.find(prev_word)  # node if found, None if not
+                    found = bigrams_lst.binary_search(prev_word)  # node if found, None if not
                     if not found:  # prev_word doesn't have any bigrams yet
                         # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
                         bigrams_lst.list_insert_tail(prev_word)
                         bigrams_lst.tail.freq = 1
                         bigrams_lst.tail.data = {}
                         # add entry to this dictionary data[word] = 1
-                        bigrams_lst.tail.data[word] = 1
+                        bigrams_lst.tail.data[word.key] = 1
 
                     else:  # prev_word already has some bigrams
                         found.freq += 1
-                        if word in found.data:  # that bigram has been seen before
-                            found.data[word] += 1  # increment its count
+                        if word.key in found.data:  # that bigram has been seen before
+                            found.data[word.key] += 1  # increment its count
                         else:   # not seen that bigram yet
-                            found.data[word] = 1  # add a new entry to the dictionary
+                            found.data[word.key] = 1  # add a new entry to the dictionary
             prev_word = word.key
             word = word.next_node
 
@@ -108,6 +107,7 @@ class NGramModel:
                 prob = firstword.data[secondword]/firstword.freq
                 firstword.data[secondword] = prob  # replace counts in bigrams dict with relative probability
             firstword = firstword.next_node
+        print("model made!")
         return bigrams_lst
 
     @staticmethod
@@ -117,14 +117,14 @@ class NGramModel:
         for word in probDict:
             cumulative_prob += probDict[word]
             if cumulative_prob > r:
-                return word.key
+                return word
 
     def generate_sentence(self):
         text = []
         prev_word = "<s>"  # start with a beginning of sentence marker
         count = 0  # just in case it fails to randomly generate an end of sentence tag in a sensible time ...
         while prev_word != "</s>" and count < 50:  # keep going until you find an end of sentence marker
-            node = self.model.find(prev_word)
+            node = self.model.binary_search(prev_word)
             new_word = self.generate_word(node.data)
             text.append(new_word)
             prev_word = new_word
@@ -132,8 +132,34 @@ class NGramModel:
         return " ".join(text[:-1])  # dont want to return the end of sentence marker
         #TODO tidy up the output a bit? get rid of whitespace around punctuation
 
+    def n_grams_with(self, word):
+        """
+        Return all the words that can follow the specified word (or (n-1)-gram).
+        :param word: the word(s) at the start of the n-gram as a string
+        :return: A generator containing all the possible following words, if found, or None if not found.
+        """
+        node = self.model.binary_search(word)
+        if node:
+            print(node.key)
+            for item in node.data:
+                yield item.key
+        else:
+            return None
+
+    def most_common_words(self, n=10):
+        """
+        Return the n most common words in the corpus
+        :param n: How many words you want to be returned (integer)
+        :return: ***
+        """
+        mod = self.model.quicksort()
+        word = mod.head
+        counter = 1
+        while counter < n and word:
+            yield word.key
+
 if __name__ == "__main__":
-    mod = NGramModel("christmas.txt", 2)
+    mod = NGramModel("sml_test.txt", 2)
     # print(mod.tokenise())
     print(mod.generate_sentence())
     print(mod.generate_sentence())
@@ -144,5 +170,6 @@ if __name__ == "__main__":
     print(mod.generate_sentence())
     print(mod.generate_sentence())
     print(mod.generate_sentence())
-
-
+    #words = mod.most_common_words(20)
+    # for item in words:
+      #  print(item)

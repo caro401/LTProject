@@ -21,7 +21,7 @@ class LinkedList:
     def __iter__(self):
         current = self._head
         while current:
-            yield current.key
+            yield current.key, current.freq
             current = current.next_node
 
     def __str__(self):
@@ -167,14 +167,20 @@ class LinkedList:
             if compare.key > main.key:  # this catches the case where main is the smallest element in the list so far and
                                         # needs to be inserted at head of list. This is nasty, could do with being tidied
                 move_node = self.list_delete(main)  # cut out main node
-                self.list_insert_head(move_node.key)  # insert it at the head
+                self.list_insert_head(move_node)  # insert it at the head
+                main = main.next_node
             else:  # all other cases
-                move_node = self.list_delete(main)  # cut out the main node
-                self.list_insert_middle(compare, move_node.key)  # insert it after the last node you found that was smaller
+                temp = main
+                main = main.next_node
+                move_node = self.list_delete(temp)  # cut out the main node
+                self.list_insert_middle(compare, move_node)  # insert it after the last node you found that was smaller
                                                                # main and not None
-            main = main.next_node  # look at the next node. This works because although you have cut the pointer to main
-            # by using list_delete, you made a new node with its key only, and the original main node, and its next_node
-            # pointer still exist
+
+        # update the value of self.tail to be the biggest item!
+        start = self.head
+        while start.next_node is not None:
+            start = start.next_node
+        self._tail = start
 
     def binary_search(self, key):  #TODO fix weird in here if it isn't in insertionsort
         """
@@ -183,56 +189,44 @@ class LinkedList:
         :return: node, if not found return None
         """
         self.insertionsort()
-        print("The list", self)
         max_i = self._size - 1  # max_i & min_i mark the "boundaries" of the search. now max_i is basically len(list)-1
-        print("max", max_i)
         min_i = 0
         mid_i = (min_i + max_i)//2
         splitpoint = self.head
         for i in range(min_i, mid_i):  # loop over and find the first middle point (splitpoint)
             splitpoint = splitpoint.next_node  # will loop over and stop at mid_i
-        print("the first splitpoint is", splitpoint.key)
 
         while min_i < max_i and splitpoint.key != key and splitpoint.next_node is not None:
             if splitpoint.key < key:  # key is to the left of splitpoint (reachable with .next_node method)
-                print("splitpoint is smaller than key (key is to the left of splitpoint)")
                 min_i = mid_i + 1  # move the left boundary to mid_i (focus on the right part)
-                print("boundary:", min_i, max_i)
                 mid_i = (min_i + max_i)//2
                 if min_i == max_i:  # when min_i == max_i for i in range won't work, have to change point manually
                 # although we have min_i< max_i in the while loop this is still possible as the loop will not break
                 # immediately when min_i == max_i
                     splitpoint = splitpoint.next_node  # if key is in list it will be this node
                     if splitpoint.key == key:
-                        print("splitpoint (Node) returned, the key is", splitpoint.key)
                         return splitpoint
                     else:  # if splitpoint != key at this point, key is not in the list
-                        print("key not found in the list, None returned")
                         return None
 
                 else:  # normal cases, when min_i < max_i
                     for i in range(min_i, mid_i+1):  # will loop over and stop at the new mid_i
                         splitpoint = splitpoint.next_node
-                    print("splitpoint is updated to", splitpoint.key)
                 continue  # go back to the start of while loop and see if the new splitpoint is at a reachable position to the key
             # this will break when 1.) when the key is found  2.) when min_i == max_i 3.) splitpoint.next_node is None
 
             else:  # key is to the right of the splitpoint (unreachable), splitpoint must be reset
-                print("splitpoint is bigger than key (key is to the right of splitpoint)")
                 max_i = mid_i  # move the right boundary to mid_i (focus on the left part)
-                print("boundary:", min_i, max_i)
                 mid_i = (min_i + max_i) // 2  # get a new mid_i
                 splitpoint = self.head  # search for a new splitpoint from the head
                 for i in range(0, mid_i):
                     splitpoint = splitpoint.next_node  # will loop over and stop at mid_i
-                print("splitpoint is updated to", splitpoint.key)
                 continue  # go back to the while loop and see if splitpoint < key
 
         if min_i != max_i:  # if the while loop breaks because splitpoint happens to be the key, it goes here
-            print("splitpoint (Node) returned, the key is", splitpoint.key)
             return splitpoint
         else:   # if key is smaller than all items in the list, it will loop over the "else" part above and
-            print("key not found in the list, None returned")  # break when min_i == max_i, but no key is found
+            return None  # break when min_i == max_i, but no key is found
 
     def mergesort(self):
         # This is a method to make the list mergesort itself
@@ -317,11 +311,10 @@ class LinkedList:
             j = j.next_node
             if j:
                 print("j is now", j.key)
-        # swap pivot and j
+        # swap pivot and j  # TODO swap properly!
         pivot.key, i.key = i.key, pivot.key
         pivot.data, i.data = i.data, pivot.data
         print("pivot {}, i {}".format(pivot.key, i.key))
-        print(ll)
         return i
 
     def find(self, key):  # the trivial search algorithm, for testing ngram_list
@@ -348,5 +341,8 @@ if __name__ == "__main__":
         ll.list_insert_tail(i)
 
     print(ll)
-    found = ll.binary_search(45)
+    ll.binary_search(7)
     print(ll, "done")
+    print("head {}, tail {}".format(ll.head.key, ll.tail.key))
+    ll.list_insert_tail(4)
+    print(ll, "new")
