@@ -1,5 +1,4 @@
 # TODO add methods for other values of n (trigram, 4-gram etc)
-# TODO find a way to use the other sort algorithm, something like return which word can go with the most other words?
 # TODO documentation!
 from nltk import word_tokenize
 import random
@@ -56,6 +55,8 @@ class NGramModel:
         :return: dictionary of all unigrams and associated counts
         """
         unigram_dict = {}
+
+        # make a dictionary of counts
         x = self.tokens.head
         while x is not None:
             if x.key not in unigram_dict:  # if you haven't encountered this token yet
@@ -63,10 +64,14 @@ class NGramModel:
             else:  # you have already seen this token
                 unigram_dict[x.key] += 1  # increment its count in the dictionary
             x = x.next_node
+
+        # turn the counts into probabilities
+        total_tokens = self.tokens._size
+        for word in unigram_dict:
+            unigram_dict[word] = unigram_dict[word]/total_tokens
         return unigram_dict
 
     def make_bigram_model(self):
-        # TODO use a better search algorithm!
         print("finding bigrams!")
         word = self.tokens.head
         bigrams_lst = linked_list.LinkedList()  # this stores bigrams, key = first word, value = dict of possible second words and probabilities
@@ -119,6 +124,18 @@ class NGramModel:
             if cumulative_prob > r:
                 return word
 
+    def generate_sentence_unigram(self):
+        sentence = []
+        unigrams = self.unigram_count()
+        new_word = ""
+        count = 0
+        while new_word != "</s>" and count < 50:
+            new_word = self.generate_word(unigrams)
+            sentence.append(new_word)
+            count += 1
+        return " ".join(sentence)
+
+
     def generate_sentence(self):
         text = []
         prev_word = "<s>"  # start with a beginning of sentence marker
@@ -169,10 +186,9 @@ class NGramModel:
         return data.tail.key
 
 if __name__ == "__main__":
-    mod = NGramModel("tinytest.txt", 2)
+    mod = NGramModel("textfortest.txt", 2)
     # print(mod.tokenise())
-    print(mod.generate_sentence())
-    most = mod.most_next_words()
-    print(most)
-
+    #print(mod.generate_sentence())
+    print(mod.unigram_count())
+    print(mod.generate_sentence_unigram())
 

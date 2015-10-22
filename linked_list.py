@@ -156,7 +156,7 @@ class LinkedList:
         a.next_node, b.next_node = b.next_node, a.next_node
         return self
 
-    def insertionsort(self):  # TODO something weird is happening in here. fix it
+    def insertionsort(self):
         main = self.head.next_node  # this is the value from the main for loop on a list (start at second item)
         while main is not None:  # while there are still unchecked items in the list
             compare = self.head  # this is the thing from the inner loop on an array, start at the start of the list
@@ -228,7 +228,7 @@ class LinkedList:
         else:   # if key is smaller than all items in the list, it will loop over the "else" part above and
             return None  # break when min_i == max_i, but no key is found
 
-    def mergesort(self):
+    def mergesort(self):  # NOTE this sorts on the length of the data attribute
         # This is a method to make the list mergesort itself
         return self.mergesort_recurse(self)
 
@@ -268,7 +268,7 @@ class LinkedList:
                     merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
         return merged
 
-    def quicksort(self):
+    def quicksort(self):  # note this sorts in reverse order atm, and on the frequ
         print("quicksorting", self)
         return self.quicksort_recurse(self, self.head, self._tail)
 
