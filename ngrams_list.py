@@ -1,3 +1,7 @@
+# TODO add methods for other values of n (trigram, 4-gram etc)
+# TODO add method for returning x most common words (sort the list by freq field)
+# TODO add method for returning all n-grams starting with a specific word
+# TODO find a way to use the other sort algorithm, something like return which word can go with the most other words?
 from nltk import word_tokenize
 import random
 import linked_list
@@ -13,6 +17,7 @@ class NGramModel:
         self.file = file
         self.n = n
         self.tokens = self.tokenise()  # linked list of tokens of text in order, including sentence start/end
+        self.model = self.make_bigram_model()
 
     def tokenise(self):  # TODO test!
         """
@@ -46,7 +51,7 @@ class NGramModel:
 
         return tokens_ll
 
-    def unigram_count(self):  # TODO test! compare to NLTK output?  this is now redundant...
+    def unigram_count(self):  # TODO this is currently redundant. use it somewhere or delete it
         """
         Work out the counts of all the unigrams in the list of tokens.
         :return: dictionary of all unigrams and associated counts
@@ -61,87 +66,83 @@ class NGramModel:
             x = x.next_node
         return unigram_dict
 
-    def ngram_count(self, n):  # TODO test. Compare with NLTK?
-        """
-        Work out the counts of all the n-grams in the list of tokens (generalised version of unigram count)
-        :param n:
-        :return:
-        """
-        ngram_dict = {}
-        x = self.tokens.head  # start of n-gram
-        y = x
-        for i in range(n-1):
-            y = y.next_node  # y represents the end of the n-gram
-        while y is not None:  # ie while the n-gram won't go off the end of the list
-
-            # build the key from the values of the nodes between x and y inclusive
-            k = x.key  # the n-gram
-            iter_node = x
-            for i in range(n-1):
-                iter_node = iter_node.next_node
-                k = k + " " + iter_node.key
-
-            # update the dictionary based on this key
-            if k not in ngram_dict:
-                ngram_dict[k] = 1
-            else:
-                ngram_dict[k] += 1
-
-            # increment the pointers to the start and end of the n-gram
-            x = x.next_node
-            y = y.next_node
-        return ngram_dict
-
     def make_bigram_model(self):
+        # TODO use a better search algorithm!
+        print("finding bigrams!")
         word = self.tokens.head
         bigrams_lst = linked_list.LinkedList()  # this stores bigrams, key = first word, value = dict of possible second words and probabilities
         prev_word = ""
         while word:  # traverse the list of tokens to the end
             if prev_word != "":
-                pass
-                # found = bigrams_lst.find(prev_word.key)  # node if found, None if not
-                # found_bigrams = bigrams_lst.find(prev_word.key)
-                # if not found:  # prev_word doesn't have any bigrams yet
+                if not bigrams_lst.head:  # for the first time through, when the list is empty, just add the thing
                     # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
+                    bigrams_lst.list_insert_tail(prev_word)
+                    bigrams_lst.tail.freq = 1
+                    bigrams_lst.tail.data = {}
                     # add entry to this dictionary data[word] = 1
-                # else:  # prev_word already has some bigrams
-                    # found.freq += 1
-                    # if word in found_bigrams.data:  # that bigram has been seen before
-                        # found_bigrams.data[word] += 1  # increment its count
-                    # else:   # not seen that bigram yet
-                        # found_bigrams.data[word] = 1  # add a new entry to the dictionary
-            prev_word = word
+                    bigrams_lst.tail.data[word] = 1
+                else:
+                    found = bigrams_lst.find(prev_word)  # node if found, None if not
+                    if not found:  # prev_word doesn't have any bigrams yet
+                        # add a new node to freq_lst with key prev_word.key and freq 1 and data {}
+                        bigrams_lst.list_insert_tail(prev_word)
+                        bigrams_lst.tail.freq = 1
+                        bigrams_lst.tail.data = {}
+                        # add entry to this dictionary data[word] = 1
+                        bigrams_lst.tail.data[word] = 1
+
+                    else:  # prev_word already has some bigrams
+                        found.freq += 1
+                        if word in found.data:  # that bigram has been seen before
+                            found.data[word] += 1  # increment its count
+                        else:   # not seen that bigram yet
+                            found.data[word] = 1  # add a new entry to the dictionary
+            prev_word = word.key
             word = word.next_node
 
         # turn counts into probabilities
-        # firstword = bigrams_lst.head
-        # while firstword:  # iterate through bigrams list
-            # for secondword in firstword.data:
-                # prob = firstword.data[secondword]/firstword.freq
-                # firstword.data[secondword] = prob  # replace counts in bigrams dict with relative probability
+        print("doing maths!")
+        firstword = bigrams_lst.head
+        while firstword:  # iterate through bigrams list
+            for secondword in firstword.data:
+                prob = firstword.data[secondword]/firstword.freq
+                firstword.data[secondword] = prob  # replace counts in bigrams dict with relative probability
+            firstword = firstword.next_node
         return bigrams_lst
 
-    def generate_word(self, probDict):  # pass this a dictionary of probabilities (_Node.data)
+    @staticmethod
+    def generate_word(probDict):  # pass this a dictionary of probabilities (_Node.data)
         r = random.random()
         cumulative_prob = 0
         for word in probDict:
             cumulative_prob += probDict[word]
             if cumulative_prob > r:
-                return word
+                return word.key
 
     def generate_sentence(self):
-        mod = self.make_bigram_model()
         text = []
         prev_word = "<s>"  # start with a beginning of sentence marker
-        while prev_word != "<\s>":  # keep going until you find an end of sentence marker
-            pass
-            # node = mod.find(prev_word)
-            # new_word = self.generate_word(node.data)
-            # text.append(new_word)
-            # prev_word = new_word
-        return " ".join(text[1:-1])  # dont want to return the start/end of sentence markers
+        count = 0  # just in case it fails to randomly generate an end of sentence tag in a sensible time ...
+        while prev_word != "</s>" and count < 50:  # keep going until you find an end of sentence marker
+            node = self.model.find(prev_word)
+            new_word = self.generate_word(node.data)
+            text.append(new_word)
+            prev_word = new_word
+            count += 1
+        return " ".join(text[:-1])  # dont want to return the end of sentence marker
+        #TODO tidy up the output a bit? get rid of whitespace around punctuation
 
 if __name__ == "__main__":
-    mod = NGramModel("sml_test.txt", 2)
+    mod = NGramModel("christmas.txt", 2)
     # print(mod.tokenise())
-    print(mod.ngram_count(3))
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+    print(mod.generate_sentence())
+
+
