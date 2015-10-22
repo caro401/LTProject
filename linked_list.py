@@ -283,11 +283,13 @@ class LinkedList:
         return merged
 
     def quicksort(self):
+        print("quicksorting", self)
         return self.quicksort_recurse(self, self.head, self._tail)
 
     def quicksort_recurse(self, lst, start, end):
         if start and start.key != end.key:
             print("partitioning", start.key, end.key)
+            print(self)
             pivot = self.partition(lst, start, end)
             self.quicksort_recurse(lst, start, pivot)
             self.quicksort_recurse(lst, pivot.next_node, end)
@@ -298,21 +300,17 @@ class LinkedList:
         i = pivot
         jprev = pivot  # track the node before j, used for swapping
         j = pivot.next_node
-        print("j is", j.key)
         while j != end.next_node:  # assuming unique keys
-            if j.key < pivot.key:
+            if j.freq > pivot.freq:
                 # swap  i and j
-                if i.next_node.key != j.key:
-                    print("swapping {} and {}".format(i.next_node.key, j.key))
+                if i.next_node.freq != j.freq:
                     lst.swap(i, jprev)
-                print("after swapping", lst)
                 i = i.next_node
             jprev = j
             j = j.next_node
-            if j:
-                print("j is now", j.key)
         # swap pivot and j  # TODO swap properly!
         pivot.key, i.key = i.key, pivot.key
+        pivot.freq, i.freq = i.freq, pivot.freq
         pivot.data, i.data = i.data, pivot.data
         print("pivot {}, i {}".format(pivot.key, i.key))
         return i
@@ -346,3 +344,4 @@ if __name__ == "__main__":
     print("head {}, tail {}".format(ll.head.key, ll.tail.key))
     ll.list_insert_tail(4)
     print(ll, "new")
+

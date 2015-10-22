@@ -1,5 +1,4 @@
 # TODO add methods for other values of n (trigram, 4-gram etc)
-# TODO add method for returning x most common words (sort the list by freq field)
 # TODO find a way to use the other sort algorithm, something like return which word can go with the most other words?
 from nltk import word_tokenize
 import random
@@ -140,9 +139,9 @@ class NGramModel:
         """
         node = self.model.binary_search(word)
         if node:
-            print(node.key)
+            print("words that follow", node.key)
             for item in node.data:
-                yield item.key
+                yield item
         else:
             return None
 
@@ -152,24 +151,24 @@ class NGramModel:
         :param n: How many words you want to be returned (integer)
         :return: ***
         """
-        mod = self.model.quicksort()
-        word = mod.head
-        counter = 1
+        self.model.quicksort()
+        word = self.model.head
+        counter = 0
         while counter < n and word:
             yield word.key
+            word = word.next_node
+            counter += 1
+
 
 if __name__ == "__main__":
-    mod = NGramModel("sml_test.txt", 2)
+    mod = NGramModel("tinytest.txt", 2)
     # print(mod.tokenise())
     print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    print(mod.generate_sentence())
-    #words = mod.most_common_words(20)
-    # for item in words:
-      #  print(item)
+    words = mod.most_common_words(10)
+    print("model!", mod.model)
+    print(words)
+    for item in words:
+        print(item)
+    print(mod.model)
+
+
