@@ -65,7 +65,6 @@ class LinkedList:
         else:
             self._head = self._tail  # if this is the only item, make it be the first item too
         self._size += 1
-        print("selfhead is", self.head.key, "selftail is", self.tail.key)
         return self.head, self.tail
 
     def list_insert_middle(self, prev, new_node):  # TODO error handling
@@ -235,31 +234,28 @@ class LinkedList:
 
     def mergesort(self):  # NOTE this sorts on the length of the data attribute
         # This is a method to make the list mergesort itself
-        print(self.mergesort_recurse(self))
+        return self.mergesort_recurse(self)
 
 
-    def mergesort_recurse(self, lst):  # something weird is happening with the list getting modified... # TODO fix this!
+    def mergesort_recurse(self, lst):
         # this is the main recursive bit of mergesort
         if lst.head is None or lst.head.next_node is None:  # list of 0 or 1 things - trivially sorted
             return lst
         else:
             leftlist = LinkedList(lst.head)  # the left half of the list starts here
-            print(leftlist, "leftlist", self._size)
             # find the middle node
             mid = lst.find_mid()
-            print(mid.key, "mid-key")
             if mid.next_node is not None:
                 rightlist = LinkedList(mid.next_node)
-                print(rightlist, "rightlist when mid.next_node is not None")
                 mid.next_node = None  # divide the two parts
             else:
                 rightlist = LinkedList(mid)
-                print(rightlist, "rightlist")
                 leftlist.head.next_node = None
 
             left = self.mergesort_recurse(leftlist)
             right = self.mergesort_recurse(rightlist)
             lst = self.merge(left, right)
+            self._head = lst.head
             return lst
 
     @staticmethod
@@ -267,20 +263,16 @@ class LinkedList:
         # this does the merging bit of mergesort
         merged = LinkedList()
         while l.head is not None or r.head is not None:  # there are items remaining in the left sublist
-            print("get to merge now", l, "<- ->", r, "merged is now", merged)
             if l.head is None:  # left sublist is empty
                 merged.list_insert_tail(r.pop())  # remove the node at the head of r and push it to the new ll
             elif r.head is None:   # right sublist is empty
                 merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
                 if l.head.key <= r.head.key:  # I fixed this line (it seems that errors come from this, but still not sorting)
-                    print(l.head.key, "this is the thing to pop", merged, "<- is merged")
                     # remove the node at the head of l and push to new ll
                     merged.list_insert_tail(l.pop())
                 else:  # r.head < l.head
                     merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
-                    print(merged, "after popping from r", merged.tail.key)
-        print(merged, "merged")
         return merged
 
     def quicksort(self):  # note this sorts in reverse order atm, and on the frequ
@@ -336,7 +328,7 @@ if __name__ == "__main__":
     # test code goes here!
     ll = LinkedList()
     lk = LinkedList()
-    for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15, 20]:
+    for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15]:
         ll.list_insert_tail(i)
     print(ll)
     #lk.list_insert_tail(ll.pop())
@@ -345,7 +337,7 @@ if __name__ == "__main__":
     #ll.pop()
     #print(ll)
     ll.mergesort()
-    print(ll, "what?", ll._size)
+    print(ll, "what?")
 
 
     #ll.binary_search(7)
