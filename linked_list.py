@@ -234,7 +234,7 @@ class LinkedList:
 
     def mergesort(self):  # NOTE this sorts on the length of the data attribute
         # This is a method to make the list mergesort itself
-        print(self.mergesort_recurse(self))
+        return self.mergesort_recurse(self)
 
 
     def mergesort_recurse(self, lst):
