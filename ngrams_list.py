@@ -20,6 +20,7 @@ class NGramModel:
         else:  # self.n > 1:
             self.model = self.make_ngram_model()
 
+
     def tokenise(self):
         """
         Tokenise the file using NLTK, add sentence start/end tokens after each "." token.
@@ -27,11 +28,12 @@ class NGramModel:
         """
         # TODO exception handling!
         # read in file
+
         with open(self.file) as fin:
             text = fin.read()
 
-            # tokenise the file using the NLTK word_tokenise() function
-            tokens_list = word_tokenize(text)
+        # tokenise the file using the NLTK word_tokenise() function
+        tokens_list = word_tokenize(text)
 
         # we have a module object linked_list (imported) that provides a class called LinkedList()
         tokens_ll = linked_list.LinkedList()
@@ -43,7 +45,7 @@ class NGramModel:
         tokens_ll.list_insert_tail("</s>")
 
         # search tokens_ll for instances of _Node with key ".", when find one, insert two nodes: </s> and <s>
-        x = tokens_ll.head  # Shouldn't it be _head? (I suppose we are using this from the module)  # no, cos @property
+        x = tokens_ll.head
         while x is not None:
             if x.key == ".":  # when you find a full stop
                 tokens_ll.list_insert_middle(x, "</s>")  # insert end of sentence marker
@@ -51,6 +53,8 @@ class NGramModel:
             x = x.next_node  # look at next node
 
         return tokens_ll
+
+
 
     def unigram_count(self):
         """
@@ -256,7 +260,7 @@ class NGramModel:
             return data.tail.key
 
 if __name__ == "__main__":
-    mod = NGramModel("tinytest.txt", 1)
+    mod = NGramModel("textfortest.txt", 1)
     # print(mod.tokenise())
     # print(mod.generate_sentence())
     print(mod.model)

@@ -1,6 +1,5 @@
-#!python3
 # TODO make sure all classes methods have docstrings and full comments
-# TODO check all the methods are doing what we think they are (check edge cases etc)
+# TODO check all the methods are doing what we think they are (check edge cases etc) (I think so:) )
 # TODO implement error handling
 # TODO? make UML class diagrams
 
@@ -65,7 +64,6 @@ class LinkedList:
         else:
             self._head = self._tail  # if this is the only item, make it be the first item too
         self._size += 1
-        return self.head, self.tail
 
     def list_insert_middle(self, prev, new_node):  # TODO error handling
         """
@@ -142,7 +140,7 @@ class LinkedList:
         :param before_b: node before the second node you want to swap
         :return: self
         """
-        # TODO error handling as above - check a and b exist
+        # TODO error handling as above - check a and b exist (should be ok, I added a line in partition for this)
         if before_a is None:
             a = self.head
         else:
@@ -192,7 +190,7 @@ class LinkedList:
         :param key: the key to be found
         :return: node, if not found return None
         """
-        self.insertionsort()
+        self.mergesort()
         max_i = self._size - 1  # max_i & min_i mark the "boundaries" of the search. now max_i is basically len(list)-1
         min_i = 0
         mid_i = (min_i + max_i)//2
@@ -268,21 +266,18 @@ class LinkedList:
             elif r.head is None:   # right sublist is empty
                 merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
-                if l.head.key <= r.head.key:  # I fixed this line (it seems that errors come from this, but still not sorting)
+                if l.head.key <= r.head.key:  # I fixed this line (it seems that an type-related error is from this)
                     # remove the node at the head of l and push to new ll
                     merged.list_insert_tail(l.pop())
                 else:  # r.head < l.head
                     merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
         return merged
 
-    def quicksort(self):  # note this sorts in reverse order atm, and on the frequ
-        print("quicksorting", self)
+    def quicksort(self):  # note this sorts in reverse order atm, and on the frequency
         return self.quicksort_recurse(self, self.head, self._tail)
 
     def quicksort_recurse(self, lst, start, end):
         if start and start.key != end.key:
-            print("partitioning", start.key, end.key)
-            print(self)
             pivot = self.partition(lst, start, end)
             self.quicksort_recurse(lst, start, pivot)
             self.quicksort_recurse(lst, pivot.next_node, end)
@@ -293,7 +288,7 @@ class LinkedList:
         i = pivot
         jprev = pivot  # track the node before j, used for swapping
         j = pivot.next_node
-        while j != end.next_node:  # assuming unique keys
+        while j != end.next_node and j is not None and pivot is not None:  # assuming unique keys
             if j.freq > pivot.freq:
                 # swap  i and j
                 if i.next_node.freq != j.freq:
@@ -301,11 +296,10 @@ class LinkedList:
                 i = i.next_node
             jprev = j
             j = j.next_node
-        # swap pivot and j  # TODO swap properly!
+        # swap pivot and j  # TODO swap properly! (I think it's swapping ok)
         pivot.key, i.key = i.key, pivot.key
         pivot.freq, i.freq = i.freq, pivot.freq
         pivot.data, i.data = i.data, pivot.data
-        print("pivot {}, i {}".format(pivot.key, i.key))
         return i
 
     def find(self, key):  # the trivial search algorithm, for testing ngram_list
@@ -329,19 +323,13 @@ if __name__ == "__main__":
     ll = LinkedList()
     lk = LinkedList()
     for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15]:
-        ll.list_insert_tail(i)
+        new_node = _Node(i, freq = i)
+        ll.list_insert_tail(new_node)
     print(ll)
-    #lk.list_insert_tail(ll.pop())
-    #print(lk)
-
-    #ll.pop()
-    #print(ll)
-    ll.mergesort()
-    print(ll, "what?")
 
 
-    #ll.binary_search(7)
-    #print(ll, "done")
+    ll.quicksort()
+    print(ll, "done")
     #ll.swap(ll.binary_search(1), ll.binary_search(4))
     #print(ll, "that's it")
     #print("head {}, tail {}".format(ll.head.key, ll.tail.key))
