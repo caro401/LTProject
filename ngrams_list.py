@@ -220,8 +220,7 @@ class NGramModel:
         """
         # Basically this just prints the keys from the dictionary you made for each word in make_ngram_model()
         if self.n == 1:
-            print("You made a unigram model, you can't work this out!")
-            return None
+            return "You made a unigram model, you can't work this out!"
         else:
             node = self.model.binary_search(word)
             if node:
@@ -229,7 +228,7 @@ class NGramModel:
                 for item in node.data:
                     yield item
             else:
-                return None
+                return "Not found"
 
     def most_common_words(self, n=10):
         """
@@ -256,8 +255,7 @@ class NGramModel:
         :return: word, or None if the model is unigrams.
         """
         if self.n == 1:
-            print("You made a unigram model, you can't work this out!")
-            return None
+            return "You made a unigram model, you can't work this out!"
         else:
             data = self.model.mergesort()  # sort the model on the length of its dictionary
             return data.tail.key

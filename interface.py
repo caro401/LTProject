@@ -7,7 +7,7 @@ def interface():
         n = input("What type of n-gram would you like to use for your model? Enter a number between 1 and 4, press enter to exit: ")
         if n == '':
             print("Thank you and goodbye.")
-            break
+            return
         if n in ["1", "2", "3", "4"]:
             break
         else:
@@ -22,14 +22,12 @@ def interface():
             n = int(n)
             model = ngrams_list.NGramModel(fin, n)
             print("You made the model!")
-            menu(model)
-            print("Thank you and goodbye")
             break
         except:
             print("Invalid input. Please try again")
             continue
-
-
+    menu(model)
+    print("Thank you and goodbye")
 
 
 def menu(model):
@@ -42,39 +40,44 @@ def menu(model):
     """)
 
     if nxt == "1":
-        number = int(input("How many sentences would you like? Enter an integer: "))
+        number = input("How many sentences would you like? Enter an integer: ")
         try:
-            int(n)
+            number = int(number)
             for i in range(number):
                 print(model.generate_sentence())
-        except:
-            print("Invaild input. Please try again.")
-            menu(model)
+        except ValueError:
+            print("Invalid input. Please try again.")
+        menu(model)
     elif nxt == "2":
-        number = int(input("How many words would you like? Enter an integer: "))
+        number = input("How many words would you like? Enter an integer: ")
         try:
-            int(n)
+            number = int(number)
             words = model.most_common_words(number)
             for item in words:
                 print(item)
         except:
-            print("Invaild input. Please try again.")
-            menu(model)
+            print("Invalid input. Please try again.")
+        menu(model)
     elif nxt == "3":
-        print(model.most_next_words())
+        if model.n == 1:
+            print("You made a unigram model, you can't work this out!")
+        else:
+            print(model.most_next_words())
         menu(model)
     elif nxt == "4":
-        history = input("What history are you interested in? Enter a string of n-1 words: ")
-        try:
-            int(n)
-            words = model.n_grams_with(history)
-            for item in words:
-                print(item)
-        except:
-            print("Invaild input. Please try again.")
-            menu(model)
+        if model.n == 1:
+            print("You made a unigram model, you can't work this out!")
+        else:
+            history = input("What history are you interested in? Enter a string of n-1 words: ")
+            try:
+                words = model.n_grams_with(history)
+                for item in words:
+                    print(item)
+            except:
+                print("Invalid input. Please try again.")
+        menu(model)
     elif nxt == "0" or nxt == '':
-        return None
+        return
     else:
         print("Invalid input, please try again.")
         menu(model)
