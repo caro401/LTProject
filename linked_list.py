@@ -1,7 +1,4 @@
-# TODO make sure all classes methods have docstrings and full comments
-# TODO check all the methods are doing what we think they are (check edge cases etc) (I think so:) )
-# TODO implement error handling
-# TODO? make UML class diagrams
+# Linked list and its methods, used in ngrams_list
 
 
 class _Node:
@@ -35,7 +32,7 @@ class LinkedList:
     def tail(self):
         return self._tail
 
-    def list_insert_head(self, new_node):  # TODO error handling
+    def list_insert_head(self, new_node):
         """
         Insert a new node (from an existing node or a key) at the head of the list.
         :param new_node: thing  to be inserted
@@ -57,7 +54,7 @@ class LinkedList:
         n = self._tail
         if type(new_node) is not _Node:  # if the thing isn't already a node, make it a node
             self._tail = _Node(new_node)
-        else:
+        else:  # make it the tail
             self._tail = new_node
         if self._size != 0:
             n.next_node = self.tail  # if this is not the only item
@@ -65,11 +62,11 @@ class LinkedList:
             self._head = self._tail  # if this is the only item, make it be the first item too
         self._size += 1
 
-    def list_insert_middle(self, prev, new_node):  # TODO error handling
+    def list_insert_middle(self, prev, new_node):
         """
         Insert a new node, with key *key*, after the node *prev* in the list
         :param prev:  the _Node object to be inserted after
-        :param key:  the key of the new node to be inserted
+        :param new_node:  the key of the new node to be inserted
         """
         if type(new_node) is not _Node:
             new_node = _Node(new_node)  # make a node from key (if it is a key)
@@ -77,7 +74,7 @@ class LinkedList:
         prev.next_node = new_node  # make the previous node point at the new node
         self._size += 1  # increase size by 1
 
-    def list_delete(self, node):  # TODO error handling
+    def list_delete(self, node):
         """
         Delete the specified node from the list, by changing the pointer on the node before to point at the next node.
         :param node: the _Node item you want to delete
@@ -93,36 +90,44 @@ class LinkedList:
         self._size -= 1
         return node
 
-    def find_mid(self):  # used in mergesort, returns the middle node of a linked list
+    def find_mid(self):
+        """
+        Used in mergesort, returns the middle node of a linked list
+        :return: the middle node
+        """
         x = self.head
         y = self.head
         while y is not None and y.next_node is not None:
-            x = x.next_node
+            x = x.next_node  # x will be at the middle of the list when y reaches the end
             y = y.next_node.next_node
         return x
 
-    def pop(self):  # remove item at head of list, return it. used in mergesort
-        # TODO error handling (empty list)
-        n = self._head
-        self._head = self._head.next_node
-        self._size -= 1
-        return n
+    def pop(self):
+        """
+        Remove the item at the head of list, used in mergesort
+        :return: the node you just removed. If the list is empty, return None.
+        """
+        if self._head:
+            n = self._head
+            self._head = self._head.next_node
+            self._size -= 1
+            return n
+        else:
+            return None
 
     def swap_adjacent(self, prev=None):
         """
         Swap the two nodes immediately following the node specified. If prev is None, swap the first two nodes (since
         the head of a list has no previous node)    (so if you specify 7 in 789, you will get 798 with this method)
         :param prev: the node before the pair you want to switch
-        :return:
         """
-        # TODO error handling (eg when a, b are out of list)
         if prev is None:  # swap first and second items
             a = self.head
             b = self.head.next_node
             a.next_node = b.next_node
             self._head = b
             b.next_node = a
-        else:
+        else:  # normal cases
             a = prev.next_node
             b = prev.next_node.next_node
             a.next_node = b.next_node
@@ -140,7 +145,6 @@ class LinkedList:
         :param before_b: node before the second node you want to swap
         :return: self
         """
-        # TODO error handling as above - check a and b exist (should be ok, I added a line in partition for this)
         if before_a is None:
             a = self.head
         else:
@@ -159,15 +163,19 @@ class LinkedList:
         return self
 
     def insertionsort(self):
-        main = self.head.next_node  # this is the value from the main for loop on a list (start at second item)
+        """
+        Used in ngrams_list to find the most common words
+        """
+        main = self.head.next_node  # the value from the main for loop on a list (start at second item)
         while main is not None:  # while there are still unchecked items in the list
-            compare = self.head  # this is the thing from the inner loop on an array, start at the start of the list
+            compare = self.head  # the thing from the inner loop on an array, start at the start of the list
 
-            # this while loop will run from the start of the list until you either run out of nodes, or find one bigger than main
-            while compare.next_node is not None and compare.next_node.key < main.key:  # there is a node next, and it is still smaller
+            # this while loop will run from the start of the list until you either run out of nodes
+            # or find one bigger than main
+            while compare.next_node is not None and compare.next_node.key < main.key: # there is a node next, and it's still smaller
                 compare = compare.next_node  # look at the next one
-            if compare.key > main.key:  # this catches the case where main is the smallest element in the list so far and
-                                        # needs to be inserted at head of list. This is nasty, could do with being tidied
+            if compare.key > main.key:  # this catches the case where main is the smallest element in the list so far
+                                        # and needs to be inserted at head of list.
                 move_node = self.list_delete(main)  # cut out main node
                 self.list_insert_head(move_node)  # insert it at the head
                 main = main.next_node
@@ -176,7 +184,7 @@ class LinkedList:
                 main = main.next_node
                 move_node = self.list_delete(temp)  # cut out the main node
                 self.list_insert_middle(compare, move_node)  # insert it after the last node you found that was smaller
-                                                               # main and not None
+                                                             # main and not None
 
         # update the value of self.tail to be the biggest item!
         start = self.head
@@ -186,14 +194,14 @@ class LinkedList:
 
     def binary_search(self, key):
         """
-        Find the key using binary search
+        Find the key using binary search. The list is first quicksorted before searching.
         :param key: the key to be found
         :return: node, if not found return None
         """
-        self.mergesort()
-        max_i = self._size - 1  # max_i & min_i mark the "boundaries" of the search. now max_i is basically len(list)-1
+        self.quicksort()
+        max_i = self._size - 1  # max_i & min_i mark the "boundaries" of the search. Now max_i is basically len(list)-1
         min_i = 0
-        mid_i = (min_i + max_i)//2
+        mid_i = (min_i + max_i) // 2
         splitpoint = self.head
         for i in range(min_i, mid_i):  # loop over and find the first middle point (splitpoint)
             splitpoint = splitpoint.next_node  # will loop over and stop at mid_i
@@ -201,12 +209,12 @@ class LinkedList:
         while min_i < max_i and splitpoint.key != key and splitpoint.next_node is not None:
             if splitpoint.key < key:  # key is to the left of splitpoint (reachable with .next_node method)
                 min_i = mid_i + 1  # move the left boundary to mid_i (focus on the right part)
-                mid_i = (min_i + max_i)//2
+                mid_i = (min_i + max_i) // 2
                 if min_i == max_i:  # when min_i == max_i for i in range won't work, have to change point manually
-                # (although we have min_i< max_i in the while loop this is still possible as the loop will not break
-                # immediately when min_i == max_i)
+                    # (although we have min_i< max_i in the while loop this is still possible as the loop will not break
+                    # immediately when min_i == max_i)
                     splitpoint = splitpoint.next_node  # if key is in list it will be this node
-                    if splitpoint.key == key: # see if this is the key
+                    if splitpoint.key == key:  # see if this is the key
                         return splitpoint
                     else:  # if splitpoint != key at this point, key is not in the list
                         return None
@@ -228,15 +236,16 @@ class LinkedList:
         if min_i != max_i:  # if the while loop breaks because splitpoint happens to be the key, it goes here
             return splitpoint
         else:   # if key is smaller than all items in the list, it will loop over the "else" part above and
-            return None  # break when min_i == max_i and goes here (no key is found, None is returned)
+            return None  # break when min_i == max_i and goes here (no key is found, so None is returned)
 
-    def mergesort(self):  # NOTE this sorts on the length of the data attribute
-        # This is a method to make the list mergesort itself
+    def mergesort(self):  # this sorts on the length of the data attribute
+        """
+        This is a method that makes the list mergesort itself.
+        :return: the sorted list
+        """
         return self.mergesort_recurse(self)
 
-
-    def mergesort_recurse(self, lst):
-        # this is the main recursive bit of mergesort
+    def mergesort_recurse(self, lst):  # this is the main recursive bit of mergesort
         if lst.head is None or lst.head.next_node is None:  # list of 0 or 1 things - trivially sorted
             return lst
         else:
@@ -253,7 +262,7 @@ class LinkedList:
             left = self.mergesort_recurse(leftlist)
             right = self.mergesort_recurse(rightlist)
             lst = self.merge(left, right)
-            self._head = lst.head
+            self._head = lst.head  # update the head
             return lst
 
     @staticmethod
@@ -266,71 +275,52 @@ class LinkedList:
             elif r.head is None:   # right sublist is empty
                 merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
-                if l.head.key <= r.head.key:  # I fixed this line (it seems that an type-related error is from this)
+                if l.head.key <= r.head.key:
                     # remove the node at the head of l and push to new ll
                     merged.list_insert_tail(l.pop())
                 else:  # r.head < l.head
                     merged.list_insert_tail(r.pop())  # remove the node at the head of l and push to new ll
         return merged
 
-    def quicksort(self):  # note this sorts in reverse order atm, and on the frequency
+    def quicksort(self):
+        """
+        Used in binary search. Sorted in reversed order (ie large to small) and on frequency.
+        :return: the sorted list
+        """
         return self.quicksort_recurse(self, self.head, self._tail)
 
-    def quicksort_recurse(self, lst, start, end):
+    def quicksort_recurse(self, lst, start, end):  # the main recursive part of quicksort
         if start and start.key != end.key:
             pivot = self.partition(lst, start, end)
             self.quicksort_recurse(lst, start, pivot)
             self.quicksort_recurse(lst, pivot.next_node, end)
 
     @staticmethod
-    def partition(lst, start, end):  # used in quicksort
+    def partition(lst, start, end):  # the partition part of quicksort
         pivot = start
         i = pivot
         jprev = pivot  # track the node before j, used for swapping
         j = pivot.next_node
-        while j != end.next_node and j is not None and pivot is not None:  # assuming unique keys
+        while j != end.next_node and j is not None and pivot is not None:  # (assuming unique keys)
             if j.freq > pivot.freq:
-                # swap  i and j
+                # swap i and j
                 if i.next_node.freq != j.freq:
                     lst.swap(i, jprev)
                 i = i.next_node
             jprev = j
             j = j.next_node
-        # swap pivot and j  # TODO swap properly! (I think it's swapping ok)
+        # swap pivot and j after having all the larger items to the left
         pivot.key, i.key = i.key, pivot.key
         pivot.freq, i.freq = i.freq, pivot.freq
         pivot.data, i.data = i.data, pivot.data
         return i
 
-    def find(self, key):  # the trivial search algorithm, for testing ngram_list
-        node = self.head
-        while node:
-            if node.key == key:
-                return node
-            else:
-                node = node.next_node
-        return None
-
-
-
-
-
-# TODO error handling generally
-
 
 if __name__ == "__main__":
     # test code goes here!
     ll = LinkedList()
-    lk = LinkedList()
     for i in [5, 2, 9, 8, 1, 3, 6, 7, 14, 45, 15]:
-        new_node = _Node(i, freq = i)
+        new_node = _Node(i, freq=i)
         ll.list_insert_tail(new_node)
     print(ll)
-
-
-    ll.quicksort()
-    print(ll, "done")
-    #ll.swap(ll.binary_search(1), ll.binary_search(4))
-    #print(ll, "that's it")
-    #print("head {}, tail {}".format(ll.head.key, ll.tail.key))
-
+    print(ll.binary_search(7).key)
