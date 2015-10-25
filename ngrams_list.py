@@ -1,5 +1,3 @@
-# TODO add size @property in linked_list
-# TODO swap sort algorithms?
 from nltk import word_tokenize
 import random
 import linked_list
@@ -19,7 +17,6 @@ class NGramModel:
             self.model = self.unigram_count()  # linked list of nodes, with associated probabilities
         else:  # self.n > 1:
             self.model = self.make_ngram_model()
-
 
     def tokenise(self):
         """
@@ -54,8 +51,6 @@ class NGramModel:
 
         return tokens_ll
 
-
-
     def unigram_count(self):
         """
         Work out the probability of all the unigrams in the list of tokens, from their counts.
@@ -73,7 +68,7 @@ class NGramModel:
             x = x.next_node
 
         # turn the counts into probabilities
-        total_tokens = self.tokens._size
+        total_tokens = self.tokens.size
         for word in unigram_dict:
             unigram_dict[word] = unigram_dict[word]/total_tokens
         return unigram_dict
@@ -164,7 +159,6 @@ class NGramModel:
             return sentence_str  # TODO tidy up the output a bit? get rid of whitespace around punctuation
 
         else:  # you generated an empty sentence
-            print("Generated empty sentence, trying again")
             return self.generate_sentence_unigram()
 
     def generate_sentence(self):
@@ -210,7 +204,6 @@ class NGramModel:
             if sentence_str != "":
                 return sentence_str  # TODO tidy up the output a bit? get rid of whitespace around punctuation
             else:  # if it failed to generate any words
-                print("Generated empty sentence, trying again")
                 return self.generate_sentence()  # call itself again, until you get a sentence that is not empty
 
     def n_grams_with(self, word):
@@ -239,7 +232,7 @@ class NGramModel:
         :param n: How many words you want to be returned (integer)
         :return: ***
         """
-        self.model.quicksort()
+        self.model.insertionsort()
         word = self.model.head
         counter = 0
         while counter < n and word:
@@ -266,4 +259,3 @@ if __name__ == "__main__":
     print(mod.model)
     # print(mod.model.head.data)
     print(mod.generate_sentence())
-
