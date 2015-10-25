@@ -68,7 +68,7 @@ class NGramModel:
             x = x.next_node
 
         # turn the counts into probabilities
-        total_tokens = self.tokens._size
+        total_tokens = self.tokens.size
         for word in unigram_dict:
             unigram_dict[word] = unigram_dict[word]/total_tokens
         return unigram_dict
@@ -87,10 +87,10 @@ class NGramModel:
         # data = dict of possible second words and probabilities
 
         # make a fake initial history, consisting of n-2 spaces and a start of sentence token
-        wordlist = [" "]*(self.n - 2)
+        wordlist = [" "]*(self.n - 1)
 
         while word:  # you haven't reached the end of the list of tokens yet
-            if wordlist[0] != " ":  # ie you have stepped on enough through the tokens to get a real history
+            if wordlist and wordlist[0] != " ":  # ie you have stepped on enough through the tokens to get a real history
                 new_key = " ".join(wordlist)
                 if not ngrams_lst.head:  # first time through, when ngrams_lst is empty, don't want to search it
                     ngrams_lst.list_insert_tail(new_key)
@@ -110,9 +110,13 @@ class NGramModel:
                         else:   # not seen that bigram yet
                             found.data[word.key] = 1  # add a new entry to the dictionary
             # shuffle all the items in the history along 1 place, add word as the last item, step on word to next token
+
             for i in range(len(wordlist)-1):
                 wordlist[i] = wordlist[i+1]
-            wordlist[-1] = word.key
+            if wordlist:
+                wordlist[-1] = word.key
+            else:
+                wordlist.append(word.key)
             word = word.next_node
 
         print("doing maths!")
@@ -221,7 +225,6 @@ class NGramModel:
             if node:
                 print("Words that follow '{}' are:".format(node.key))
                 for item in node.data:
-                    print(item)
                     yield item
             else:
                 return None
@@ -232,13 +235,14 @@ class NGramModel:
         :param n: How many words you want to be returned (integer)
         :return: ***
         """
-        self.model.insertionsort()
-        word = self.model.head
-        counter = 0
-        while counter < n and word:
-            yield word.key
-            word = word.next_node
-            counter += 1
+        if self.n > 1:  # ie you have a linked list
+            self.model.insertionsort()
+            word = self.model.head
+            counter = 0
+            while counter < n and word:
+                yield word.key
+                word = word.next_node
+                counter += 1
 
     def most_next_words(self):
         """
@@ -254,9 +258,8 @@ class NGramModel:
 
 if __name__ == "__main__":
     mod = NGramModel("textfortest.txt", 1)
-    #print(mod.tokenise())
-    print(mod.generate_sentence())
+    # print(mod.tokenise())
+    # print(mod.generate_sentence())
     print(mod.model)
-    print(mod.most_common_words(), "here")
     # print(mod.model.head.data)
     print(mod.generate_sentence())
