@@ -17,21 +17,19 @@ def interface():
     while True:
         try:
             fin = input("What training data do you want to use? Enter the path to a text file: ")
+            if fin == "":
+                print("Thank you and goodbye.")
             n = int(n)
             model = ngrams_list.NGramModel(fin, n)
+            print("You made the model!")
+            menu(model)
+            print("Thank you and goodbye")
             break
         except:
-            print("File not found. Please try again")
+            print("Invalid input. Please try again")
             continue
 
-    print("You made the model!")
-    menu(model)
-    print("Thank you and goodbye")
 
-
-    print("You made the model!")
-    menu(model)
-    print("Thank you and goodbye")
 
 
 def menu(model):
@@ -45,24 +43,36 @@ def menu(model):
 
     if nxt == "1":
         number = int(input("How many sentences would you like? Enter an integer: "))
-        for i in range(number):
-            print(model.generate_sentence())
-        menu(model)
+        try:
+            int(n)
+            for i in range(number):
+                print(model.generate_sentence())
+        except:
+            print("Invaild input. Please try again.")
+            menu(model)
     elif nxt == "2":
         number = int(input("How many words would you like? Enter an integer: "))
-        words = model.most_common_words(number)
-        for item in words:
-            print(item)
-        menu(model)
+        try:
+            int(n)
+            words = model.most_common_words(number)
+            for item in words:
+                print(item)
+        except:
+            print("Invaild input. Please try again.")
+            menu(model)
     elif nxt == "3":
         print(model.most_next_words())
         menu(model)
     elif nxt == "4":
         history = input("What history are you interested in? Enter a string of n-1 words: ")
-        words = model.n_grams_with(history)
-        for item in words:
-            print(item)
-        menu(model)
+        try:
+            int(n)
+            words = model.n_grams_with(history)
+            for item in words:
+                print(item)
+        except:
+            print("Invaild input. Please try again.")
+            menu(model)
     elif nxt == "0" or nxt == '':
         return None
     else:
