@@ -3,7 +3,7 @@ http://www.jstor.org/stable/1418920 Miller & Selfridge 1950
 10.1002/j.1538-7305.1951.tb01366.x Shannon 1951
 
 This module shall allow the user to generate random sentences based on text by an author or from a genre of their choice.
-The user shall choose whether to use a unigram, bigram or trigram (or more?) model.
+The user shall choose whether to use a unigram, bigram, trigram, or 4-gram model.
 The user shall supply some text, in the form of a text file, to be used as training data for the system.
 The system shall contain functionality to randomly generate a sentence based on the n-gram probabilities learned from this training data
 It shall also be able to return the x most common words from the text, and all n-grams that begin with a specified word.
