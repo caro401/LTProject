@@ -1,6 +1,8 @@
 from nltk import word_tokenize
 import random
 import linked_list
+from collections import OrderedDict
+
 
 
 class NGramModel:
@@ -243,6 +245,10 @@ class NGramModel:
                 yield word.key
                 word = word.next_node
                 counter += 1
+        else:  # unigrams therefore dictionary
+            sort = OrderedDict(sorted(self.model.items(), key=lambda t: t[1]))
+            for i in range(n):
+                yield sort.popitem()[0]
 
     def most_next_words(self):
         """
