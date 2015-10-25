@@ -1,9 +1,14 @@
-REFERENCES:
-http://www.jstor.org/stable/1418920 Miller & Selfridge 1950
-10.1002/j.1538-7305.1951.tb01366.x Shannon 1951
+See Jurafksy and Martin (2009) p126-8 for information about the idea.
 
 This module shall allow the user to generate random sentences based on text by an author or from a genre of their choice.
-The user shall choose whether to use a unigram, bigram, trigram, or 4-gram model.
+The module shall provide a command line interface for the user to interact with.
+The user shall choose whether to use a unigram, bigram, trigram or quadrigram  model.
 The user shall supply some text, in the form of a text file, to be used as training data for the system.
 The system shall contain functionality to randomly generate a sentence based on the n-gram probabilities learned from this training data
-It shall also be able to return the x most common words from the text, and all n-grams that begin with a specified word.
+It shall also be able to return a specified number of most common words from the text, the history which has the most possible words after it,
+and all n-grams that begin with a specified history.
+
+The module consists of three files:
+linked_list.py contains a class representing a linked list, and associated sorting, searching, insertion, deletion etc methods, and a class representing a node.
+ngrams_list.py contains a class representing an n-gram language model learned from a text file, and the associated methods for providing the specified functionality.
+interface.py contains a function to provide a command-line interface to the NGramModel class, for easier interaction.
