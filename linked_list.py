@@ -88,6 +88,12 @@ class LinkedList:
             if prev.next_node is not None:  # if the node you are looking at when you broke out of the loop has a next
                 prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
         self._size -= 1
+
+        # update the value of self.tail to be the biggest item
+        start = self.head
+        while start.next_node is not None:
+            start = start.next_node
+        self._tail = start
         return node
 
     def find_mid(self):
@@ -145,6 +151,7 @@ class LinkedList:
         :param before_b: node before the second node you want to swap
         :return: self
         """
+
         if before_a is None:
             a = self.head
         else:
@@ -206,7 +213,7 @@ class LinkedList:
         for i in range(min_i, mid_i):  # loop over and find the first middle point (splitpoint)
             splitpoint = splitpoint.next_node  # will loop over and stop at mid_i
 
-        while min_i < max_i and splitpoint.key != key and splitpoint.next_node is not None:
+        while min_i < max_i and splitpoint.key != key and splitpoint.next_node and splitpoint:
             if splitpoint.key < key:  # key is to the left of splitpoint (reachable with .next_node method)
                 min_i = mid_i + 1  # move the left boundary to mid_i (focus on the right part)
                 mid_i = (min_i + max_i) // 2
@@ -263,6 +270,7 @@ class LinkedList:
             right = self.mergesort_recurse(rightlist)
             lst = self.merge(left, right)
             self._head = lst.head  # update the head
+            self._tail = lst.tail  # update tha tail
             return lst
 
     @staticmethod
@@ -302,7 +310,7 @@ class LinkedList:
         jprev = pivot  # track the node before j, used for swapping
         j = pivot.next_node
         while j != end.next_node and j is not None and pivot is not None:  # (assuming unique keys)
-            if j.freq > pivot.freq:
+            if j.freq < pivot.freq:
                 # swap i and j
                 if i.next_node.freq != j.freq:
                     lst.swap(i, jprev)
@@ -323,4 +331,9 @@ if __name__ == "__main__":
         new_node = _Node(i, freq=i)
         ll.list_insert_tail(new_node)
     print(ll)
-    print(ll.binary_search(7).key)
+    #print(ll.swap(ll.binary_search(14), ll.binary_search(15)))
+    #print(ll, ll.head.key, ll.tail.key, "here")
+    ll.insertionsort()
+    print(ll, ll.head.key, ll.tail.key, "just")
+    print(ll.list_delete(ll.binary_search(1)))
+    print(ll, ll.head.key, ll.tail.key)

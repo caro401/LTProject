@@ -68,7 +68,7 @@ class NGramModel:
             x = x.next_node
 
         # turn the counts into probabilities
-        total_tokens = self.tokens.size
+        total_tokens = self.tokens._size
         for word in unigram_dict:
             unigram_dict[word] = unigram_dict[word]/total_tokens
         return unigram_dict
@@ -254,8 +254,9 @@ class NGramModel:
 
 if __name__ == "__main__":
     mod = NGramModel("textfortest.txt", 1)
-    # print(mod.tokenise())
-    # print(mod.generate_sentence())
+    #print(mod.tokenise())
+    print(mod.generate_sentence())
     print(mod.model)
+    print(mod.most_common_words(), "here")
     # print(mod.model.head.data)
     print(mod.generate_sentence())
