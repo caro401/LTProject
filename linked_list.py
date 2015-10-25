@@ -29,6 +29,10 @@ class LinkedList:
         return self._head
 
     @property
+    def size(self):
+        return self._size
+
+    @property
     def tail(self):
         return self._tail
 
@@ -80,16 +84,18 @@ class LinkedList:
         :param node: the _Node item you want to delete
         :return: the node you just removed
         """
-        prev = self._head  # start at the head of the list
-        if prev is not None:  # if there are some items in the list
-            # while you haven't matched the node, and there are more nodes to look at
-            while prev.next_node != node and prev.next_node is not None:
-                prev = prev.next_node  # look at the next one
-            if prev.next_node is not None:  # if the node you are looking at when you broke out of the loop has a next
-                prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
+        if node == self.head:
+            self._head = node.next_node
+        else:
+            prev = self._head  # start at the head of the list
+            if prev is not None:  # if there are some items in the list
+                # while you haven't matched the node, and there are more nodes to look at
+                while prev.next_node != node and prev.next_node is not None:
+                    prev = prev.next_node  # look at the next one
+                if prev.next_node is not None:  # if the node you are looking at when you broke out of the loop has a next
+                    prev.next_node = node.next_node  # update pointer on prev to point at thing node was pointing at
         self._size -= 1
-
-        # update the value of self.tail to be the biggest item
+        # update tail
         start = self.head
         while start.next_node is not None:
             start = start.next_node
@@ -151,7 +157,6 @@ class LinkedList:
         :param before_b: node before the second node you want to swap
         :return: self
         """
-
         if before_a is None:
             a = self.head
         else:
@@ -159,14 +164,22 @@ class LinkedList:
         if a == before_b:  # ie the nodes are adjacent
             self.swap_adjacent(before_a)
             return self
-
-        if before_b is None:
-            b = self.head
+        if before_a and before_a.next_node:
+            a = self.list_delete(before_a.next_node)
         else:
-            b = before_b.next_node
-        before_a.next_node = b
-        before_b.next_node = a
-        a.next_node, b.next_node = b.next_node, a.next_node
+            a = self.list_delete(self.head)
+
+        b = self.list_delete(before_b.next_node)
+        if before_a:
+            self.list_insert_middle(before_a, b)
+        else:
+            self.list_insert_head(b)
+        self.list_insert_middle(before_b, a)
+        # update tail
+        start = self.head
+        while start.next_node is not None:
+            start = start.next_node
+        self._tail = start
         return self
 
     def insertionsort(self):
@@ -270,7 +283,7 @@ class LinkedList:
             right = self.mergesort_recurse(rightlist)
             lst = self.merge(left, right)
             self._head = lst.head  # update the head
-            self._tail = lst.tail  # update tha tail
+            self._tail = lst.tail
             return lst
 
     @staticmethod
@@ -307,13 +320,15 @@ class LinkedList:
     def partition(lst, start, end):  # the partition part of quicksort
         pivot = start
         i = pivot
+        iprev = i
         jprev = pivot  # track the node before j, used for swapping
         j = pivot.next_node
         while j != end.next_node and j is not None and pivot is not None:  # (assuming unique keys)
-            if j.freq < pivot.freq:
+            if j.key < pivot.key:
                 # swap i and j
-                if i.next_node.freq != j.freq:
+                if i.next_node.key != j.key:
                     lst.swap(i, jprev)
+                iprev = i
                 i = i.next_node
             jprev = j
             j = j.next_node
@@ -331,9 +346,4 @@ if __name__ == "__main__":
         new_node = _Node(i, freq=i)
         ll.list_insert_tail(new_node)
     print(ll)
-    #print(ll.swap(ll.binary_search(14), ll.binary_search(15)))
-    #print(ll, ll.head.key, ll.tail.key, "here")
-    ll.insertionsort()
-    print(ll, ll.head.key, ll.tail.key, "just")
-    print(ll.list_delete(ll.binary_search(1)))
-    print(ll, ll.head.key, ll.tail.key)
+    print(ll.binary_search(7).key)
