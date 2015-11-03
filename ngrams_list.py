@@ -195,11 +195,11 @@ class NGramModel:
                 new_key = " ".join(prev_list)  # make a key from the history, in the same way as in make_ngram_model()
                 node = self.model.binary_search(new_key)  # find the node with this key
                 if node:
-                    new_word = self.generate_word(node.data)
+                    new_word = self.generate_word(node.data)  # node.data is a dict
                     text.append(new_word)
                     for i in range(len(prev_list)-1):
-                        prev_list[i] = prev_list[i+1]
-                    prev_list[-1] = new_word
+                        prev_list[i] = prev_list[i+1]  # moves to the left
+                    prev_list[-1] = new_word  # put the new word in the end
                     count += 1
                 else:  # when the (n-1)-gram you made in the key hasn't been seen in your text
                     # TODO implement some kind of backoff or smoothing?
@@ -261,9 +261,8 @@ class NGramModel:
             return data.tail.key
 
 if __name__ == "__main__":
-    mod = NGramModel("textfortest.txt", 1)
-    # print(mod.tokenise())
-    # print(mod.generate_sentence())
+    mod = NGramModel("textfortest.txt", 2)
+    #print(mod.unigram_count())
     print(mod.model)
     # print(mod.model.head.data)
-    print(mod.generate_sentence())
+    print(mod.most_next_words())

@@ -296,7 +296,7 @@ class LinkedList:
             elif r.head is None:   # right sublist is empty
                 merged.list_insert_tail(l.pop())  # remove the node at the head of l and push to new ll
             else:  # both sublists still have stuff in
-                if l.head.key <= r.head.key:
+                if len(l.head.data) <= len(r.head.data):
                     # remove the node at the head of l and push to new ll
                     merged.list_insert_tail(l.pop())
                 else:  # r.head < l.head
